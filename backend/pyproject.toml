@@ -1,0 +1,39 @@
+[project]
+name = "planner-logistica-backend"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy>=2.0,<3.0",
+    "alembic",
+    "psycopg[binary]",
+    "pydantic-settings",
+    "passlib[bcrypt]",
+    "bcrypt>=4.0,<4.1",  # passlib 1.7.4 breaks on bcrypt>=4.1 (missing __about__.__version__)
+    "python-jose[cryptography]",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "httpx",
+    "ruff",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,52 @@
+# aia-harness
+.claude/settings.local.json
+.claude/*.local.*
+.claude/.aia-harness-pending/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+
+# Env
+.env
+.env.*
+
+# Editor/OS
+.DS_Store
+.vscode/
+.idea/
+
+# Repositorio git separado (legado SAP, historico proprio em
+# github.com/KaikeFonseca/G-PlannerProjects) - nao absorver aqui.
+requisitosBases/014. Planner Project Modularizado/
+
+# Planilhas e dados locais
+backend/data/
+*.xlsx
+*.xls
+
+# Clones e scratch temporários
+planner-clone/
+scratch_*
+backend/scratch_*
+
+# Docker archives
+*.tar
+
+# Bancos de dados locais e caches
+*.db
+*.sqlite
+*.sqlite3
+*.log
+.pytest_cache/
+.ruff_cache/
+.agent/
+.agents/
+.impeccable/

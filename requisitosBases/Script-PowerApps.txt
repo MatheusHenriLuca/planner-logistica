@@ -1,0 +1,2847 @@
+powerapps:
+
+onstart do app:
+Set(varcarregando;true);;
+
+ClearCollect(varPessoas;ShowColumns(BASE_ATIVOS;'Nº pess.';'Nº pessoal';UnidadeOrg;email));;
+ClearCollect(varPessoas2;'lista perfil usuarios');;
+Set(varperfil;LookUp('lista perfil usuarios';email=User().Email;perfil_app_pcp));;
+Set(varusernome;LookUp(varPessoas;Proper(field_1) = Proper(User().FullName);field_1));;
+Set(varuserid;LookUp(varPessoas;Proper(field_1) = Proper(User().FullName);Title));;
+If(IsBlank(varperfil);Set(varperfil;"USER"));;
+
+
+Set(varcarregando;false);;
+
+startscreen:
+If("sb2" in Lower(User().Email);'Verificaçao usuário';menuScreenPlanner)
+
+Screens:
+  Verificaçao usuário:
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      ImagePosition: =ImagePosition.Stretch
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |+
+        =
+    Children:
+      - Container3_5:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Group: Group2_1
+          Properties:
+            BorderColor: =RGBA(215, 80, 55, 1)
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(215, 80, 55, 1)
+            Height: =91
+            LayoutDirection: =LayoutDirection.Vertical
+            RadiusBottomLeft: =10
+            RadiusBottomRight: =10
+            RadiusTopLeft: =10
+            RadiusTopRight: =10
+            Width: =327
+            X: =578
+            Y: =152
+          Children:
+            - Label6_8:
+                Control: Label@2.5.1
+                Properties:
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  FillPortions: =1
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  Height: =18
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  LineHeight: =0.9
+                  PaddingBottom: =0
+                  PaddingLeft: =25
+                  PaddingTop: =0
+                  Size: =60
+                  Text: ="Ação"
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =301
+                  X: =370
+                  Y: =270
+      - Container3_4:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Group: Group2_1
+          Properties:
+            BorderColor: =RGBA(215, 80, 55, 1)
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =110
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingLeft: =20
+            RadiusBottomLeft: =10
+            RadiusBottomRight: =0
+            RadiusTopLeft: |+
+              =10
+            RadiusTopRight: =0
+            Width: =377
+            X: =213
+            Y: =136
+          Children:
+            - Label6_7:
+                Control: Label@2.5.1
+                Properties:
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(215, 80, 55, 1)
+                  FillPortions: =1
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  Height: =18
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  Size: =60
+                  Text: ="Plano de"
+                  VerticalAlign: =VerticalAlign.Top
+                  Width: =301
+                  X: =370
+                  Y: =270
+      - Label6_9:
+          Control: Label@2.5.1
+          Group: Group2_1
+          Properties:
+            Align: =Align.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(215, 80, 55, 1)
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Semibold
+            Height: =23
+            Italic: =true
+            Size: =11
+            Text: ="Alcançar nossas metas e objetivos é o que nos move."
+            Width: =383
+            X: =223
+            Y: =223
+      - Image1_6:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =91
+            Image: ='oneteam determinados'
+            Width: =115
+            X: =790
+            Y: =152
+      - Image5_1:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =38
+            Image: ='Logo Gestamp branco.svg'
+            PaddingTop: =
+            Width: =115
+            X: =1011
+            Y: =11
+      - Container7_1:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.Semibold
+            Fill: =RGBA(215, 80, 55, 1)
+            Height: =60
+            LayoutDirection: =LayoutDirection.Horizontal
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =1136
+          Children:
+            - Image1_4:
+                Control: Image@2.2.3
+                Properties:
+                  AlignInContainer: =AlignInContainer.Center
+                  BorderColor: =RGBA(255, 255, 255, 1)
+                  Height: =Parent.Height
+                  Image: =User().Image
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  RadiusBottomLeft: =Parent.Height/2
+                  RadiusBottomRight: =Parent.Height/2
+                  RadiusTopLeft: =Parent.Height/2
+                  RadiusTopRight: =Parent.Height/2
+                  Width: =Parent.Height
+                  X: =10
+                  Y: =977
+            - Label6_3:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  BorderColor: |+
+                    =RGBA(9, 33, 98, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  Height: =Parent.Height
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =50
+                  LayoutMinWidth: =0
+                  Size: =(App.Height*3 + App.Width*2) * 0.004
+                  Text: =//"Seja bem-vindo(a), " & varusernome
+                  Width: =Parent.Width-Image1_4.Width
+                  X: =92
+                  Y: =977
+      - C_novoplano_2:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            BorderColor: =RGBA(215, 80, 55, 1)
+            BorderThickness: =2
+            DropShadow: =DropShadow.Regular
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =57
+            LayoutDirection: =LayoutDirection.Vertical
+            RadiusBottomLeft: =10
+            RadiusBottomRight: =10
+            RadiusTopLeft: =10
+            RadiusTopRight: =10
+            Width: =190
+            X: =473
+            Y: =341
+          Children:
+            - idusuario:
+                Control: Classic/TextInput@2.3.2
+                Properties:
+                  Align: =Align.Center
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Default: =
+                  FillPortions: =1
+                  Font: =Font.'Open Sans'
+                  HintText: ="ID:"
+                  HoverBorderColor: =RGBA(0, 18, 107, 1)
+                  HoverFill: =RGBA(186, 202, 226, 1)
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  Size: =14
+      - Image1_5:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =58
+            Image: =oneteam
+            PaddingBottom: =2
+            PaddingLeft: =2
+            PaddingRight: =2
+            PaddingTop: =2
+            Width: =69
+            X: =1067
+      - Image1_7:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =34
+            Image: =Gestamp
+            PaddingBottom: =2
+            PaddingLeft: =2
+            PaddingRight: =2
+            PaddingTop: =2
+            Width: =275
+            X: =420
+            Y: =558
+      - Label5_4:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(215, 80, 55, 1)
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Bold
+            Height: =35
+            OnSelect: =
+            Size: =12
+            Text: ="Informe seu ID:"
+            Width: =190
+            X: =473
+            Y: =306
+      - ButtonCanvas6:
+          Control: Button@0.0.45
+          Properties:
+            BasePaletteColor: =RGBA(246, 142, 104, 1)
+            Height: =49
+            OnSelect: |+
+              =Set(varuserid,LookUp(varPessoas,Title = idusuario.Text,Title));
+              Set(varusernome,LookUp(varPessoas,Title = idusuario.Text,field_1));
+              Set(varperfil,LookUp(varPessoas2,re=varuserid,perfil_app_sesmt));
+              If(IsBlank(varperfil),Set(varperfil,"USER"));
+              Set(varavancar,true);
+            Text: ="Entrar"
+            Width: =113
+            X: =511
+            Y: =425
+      - Container4:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            BorderColor: =RGBA(189, 49, 51, 1)
+            DropShadow: =DropShadow.Semibold
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =185
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingBottom: =25
+            PaddingLeft: =25
+            PaddingRight: =25
+            PaddingTop: =25
+            RadiusBottomLeft: =10
+            RadiusBottomRight: =10
+            RadiusTopLeft: =10
+            RadiusTopRight: =10
+            Visible: =varavancar
+            Width: =316
+            X: =410
+            Y: =306
+          Children:
+            - Label5:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  FillPortions: =1
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  Size: =14
+                  Text: =If(IsBlank(varuserid),"Usuário não identificado, verfique o ID informado!","Bem-vindo(a)" &" "& varusernome)
+            - Container4_1:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  Height: =156
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =15
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  PaddingLeft: =30
+                  PaddingRight: =30
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =316
+                  X: =723
+                  Y: =376
+                Children:
+                  - Button1_1:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Stretch
+                        BorderColor: =ColorFade(Self.Fill, -15%)
+                        Color: =RGBA(255, 255, 255, 1)
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        Fill: =RGBA(215, 80, 55, 1)
+                        FillPortions: =1
+                        Font: =Font.'Open Sans'
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =RGBA(255, 255, 255, 1)
+                        HoverFill: =RGBA(215, 80, 55, 1)
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        OnSelect: |-
+                          =Set(varavancar,false);
+                          Navigate(menuScreenPlanner)
+                        PressedBorderColor: =Self.Fill
+                        PressedFill: =RGBA(215, 80, 55, 1)
+                        Size: =12
+                        Text: ="Entrar"
+                        Visible: =If(IsBlank(varuserid),false,true)
+                  - Button1:
+                      Control: Classic/Button@2.2.0
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Stretch
+                        BorderColor: =ColorFade(Self.Fill, -15%)
+                        Color: =RGBA(255, 255, 255, 1)
+                        DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                        DisabledColor: =RGBA(255, 255, 255, 1)
+                        Fill: =RGBA(189, 49, 51, 1)
+                        FillPortions: =1
+                        Font: =Font.'Open Sans'
+                        HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                        HoverColor: =RGBA(255, 255, 255, 1)
+                        HoverFill: =Self.Fill
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        OnSelect: =Set(varavancar,false)
+                        PressedBorderColor: =Self.Fill
+                        PressedFill: =Self.Fill
+                        Size: =12
+                        Text: ="Voltar"
+                        Visible: =If(IsBlank(varuserid),true,false)
+Screens:
+  menuScreenPlanner:
+    Properties:
+      Fill: =RGBA(255, 255, 255, 1)
+      ImagePosition: =ImagePosition.Stretch
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |+
+        =
+    Children:
+      - Container3_3:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            BorderColor: =RGBA(215, 80, 55, 1)
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =110
+            LayoutDirection: =LayoutDirection.Vertical
+            RadiusBottomLeft: =10
+            RadiusBottomRight: =0
+            RadiusTopLeft: |+
+              =10
+            RadiusTopRight: =0
+            Width: =728
+            X: =213
+            Y: =136
+          Children:
+            - Label6_6:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(0, 81, 100, 1)
+                  FillPortions: =1
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  Height: =18
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  Size: =45
+                  Text: ="Planejamento Logístico"
+                  Width: =301
+                  X: =370
+                  Y: =270
+      - Container7:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.Semibold
+            Fill: =RGBA(0, 81, 100, 1)
+            Height: =60
+            LayoutDirection: =LayoutDirection.Horizontal
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =1136
+          Children:
+            - Image1_2:
+                Control: Image@2.2.3
+                Properties:
+                  AlignInContainer: =AlignInContainer.Center
+                  BorderColor: =RGBA(255, 255, 255, 1)
+                  Height: =Parent.Height
+                  Image: =User().Image
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  RadiusBottomLeft: =Parent.Height/2
+                  RadiusBottomRight: =Parent.Height/2
+                  RadiusTopLeft: =Parent.Height/2
+                  RadiusTopRight: =Parent.Height/2
+                  Width: =Parent.Height
+                  X: =10
+                  Y: =977
+            - Label6_2:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  Height: =Parent.Height
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =50
+                  LayoutMinWidth: =0
+                  Size: =(App.Height*3 + App.Width*2) * 0.004
+                  Text: ="Seja bem-vindo(a), " & Proper(varusernome)
+                  Width: =Parent.Width-Image1_2.Width
+                  X: =92
+                  Y: =977
+      - C_novoplano_1:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            BorderColor: =RGBA(9, 33, 98, 1)
+            BorderThickness: =1
+            DropShadow: =DropShadow.Regular
+            Fill: =RGBA(0, 81, 100, 1)
+            Height: =100
+            LayoutDirection: =LayoutDirection.Horizontal
+            RadiusBottomLeft: =10
+            RadiusBottomRight: =10
+            RadiusTopLeft: =10
+            RadiusTopRight: =10
+            Width: =240
+            X: =592
+            Y: =348
+          Children:
+            - Icon1_2:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  FillPortions: =1
+                  Icon: =Icon.DocumentWithContent
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  OnSelect: =
+                  PaddingBottom: =5
+                  PaddingLeft: =5
+                  PaddingRight: =5
+                  PaddingTop: =5
+            - Label5_2:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 81, 100, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  DisabledBorderColor: =RGBA(0, 81, 100, 1)
+                  FillPortions: =3
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  OnSelect: =
+                  Size: =14
+                  Text: ="Diário de bordo"
+      - C_controle_1:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            BorderColor: =RGBA(9, 33, 98, 1)
+            BorderThickness: =1
+            DropShadow: =DropShadow.Regular
+            Fill: =RGBA(0, 81, 100, 1)
+            Height: =100
+            LayoutDirection: =LayoutDirection.Horizontal
+            RadiusBottomLeft: =10
+            RadiusBottomRight: =10
+            RadiusTopLeft: =10
+            RadiusTopRight: =10
+            Width: =240
+            X: =305
+            Y: =348
+          Children:
+            - Icon1_3:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  FillPortions: =1
+                  Icon: =Icon.Waffle
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  OnSelect: =Navigate(mainScreenPlanner)
+                  PaddingBottom: =10
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  PaddingTop: =10
+            - Label5_3:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  AlignInContainer: =AlignInContainer.Stretch
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  FillPortions: =3
+                  Font: =Font.'Open Sans'
+                  FontWeight: =FontWeight.Bold
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinWidth: =0
+                  OnSelect: =Navigate(mainScreenPlanner)
+                  Size: =14
+                  Text: ="Programação PCP"
+      - Image1_1:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =58
+            Image: =oneteam
+            PaddingBottom: =2
+            PaddingLeft: =2
+            PaddingRight: =2
+            PaddingTop: =2
+            Width: =69
+            X: =1067
+      - Image1_3:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =34
+            Image: =Gestamp
+            PaddingBottom: =2
+            PaddingLeft: =2
+            PaddingRight: =2
+            PaddingTop: =2
+            Width: =275
+            X: =420
+            Y: =558
+      - Container8:
+          Control: GroupContainer@1.5.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.Semilight
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =177
+            RadiusBottomLeft: =5
+            RadiusBottomRight: =5
+            RadiusTopLeft: =5
+            RadiusTopRight: =5
+            Visible: '=IsBlank(varusernome) And varcarregando = false    '
+            Width: =800
+            X: =155
+            Y: =339
+          Children:
+            - ButtonCanvas4:
+                Control: Button@0.0.45
+                Properties:
+                  BasePaletteColor: =RGBA(141, 229, 250, 1)
+                  FontSize: =20
+                  Height: =70
+                  Icon: ="PeopleAdd"
+                  OnSelect: =Navigate('Verificaçao usuário')
+                  Text: ="Verificar usuário"
+                  Width: =219
+                  X: =Parent.Width/2 - Self.Width/2
+                  Y: =Parent.Height/2 - Self.Height/2
+      - ButtonCanvas9:
+          Control: Button@0.0.45
+          Properties:
+            Appearance: ='ButtonCanvas.Appearance'.Secondary
+            Icon: ="People"
+            OnSelect: =Navigate('Verificaçao usuário')
+            Text: ="Usuários"
+            Visible: =User().FullName = "Matheus Henrique de Luca" Or varperfil = "ADMIN"
+            X: =16
+            Y: =592
+      - Carregando_1:
+          Control: CanvasComponent
+          ComponentName: Carregando
+          Properties:
+            Fill: =RGBA(255, 255, 255, 1)
+            Visible: =varcarregando
+            Width: =1136
+Screens:
+  mainScreenPlanner:
+    Properties:
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =Set(ligartimer,false);
+        UpdateContext({varcarregando:true});
+
+        Select(icoRefreshMainScreen);
+    Children:
+      - contGalleryKanbans:
+          Control: Gallery@2.15.0
+          Variant: BrowseLayout_Horizontal_TwoTextOneImageVariant_ver5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =554
+            Items: =colpostos
+            TemplateSize: =Parent.Width/5
+            Width: =1136
+            Y: =86
+          Children:
+            - lblTituloColuna:
+                Control: Text@0.0.51
+                Properties:
+                  Align: ='TextCanvas.Align'.Center
+                  BorderRadius: =5
+                  Fill: =RGBA(53, 61, 63, 1)
+                  FontColor: =RGBA(255, 255, 255, 1)
+                  Height: =22
+                  PaddingBottom: =0
+                  PaddingLeft: =0
+                  PaddingRight: =0
+                  PaddingTop: =0
+                  Text: =ThisItem.Value
+                  VerticalAlign: =VerticalAlign.Middle
+                  Weight: ='TextCanvas.Weight'.Bold
+                  Width: =210
+                  X: =6
+                  Y: =5
+            - galleryKanbans:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Height: =520
+                  Items: |-
+                    =Filter(
+                    SortByColumns(coll_automacao_planner,"posto",SortOrder.Ascending,"sequencia",SortOrder.Ascending),ThisItem.Value=posto,STATUS = 2 And (turno = 1 Or turno = 2 Or turno = 3))
+                  TemplatePadding: =2
+                  TemplateSize: =167
+                  Width: =226
+                  X: =3
+                  Y: =27
+                Children:
+                  - contKanban:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 0.49)
+                        BorderThickness: =1
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(255, 255, 255, 1)
+                        Height: =162
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =4
+                        RadiusBottomLeft: =5
+                        RadiusBottomRight: =5
+                        RadiusTopLeft: =5
+                        RadiusTopRight: =5
+                        Width: =208
+                        Y: =2
+                      Children:
+                        - contBodyKanban:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - contHeadderKanban:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    FillPortions: =0
+                                    Height: =25
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMaxHeight: =
+                                    LayoutMaxWidth: =
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    PaddingLeft: =5
+                                    PaddingRight: =5
+                                    RadiusBottomLeft: =3
+                                    RadiusBottomRight: =3
+                                    RadiusTopLeft: =3
+                                    RadiusTopRight: =3
+                                    Width: =30
+                                  Children:
+                                    - txtSequencia:
+                                        Control: Text@0.0.51
+                                        Properties:
+                                          Align: ='TextCanvas.Align'.Center
+                                          AlignInContainer: =AlignInContainer.Stretch
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          Size: =16
+                                          Text: =ThisItem.sequencia
+                                          VerticalAlign: =VerticalAlign.Middle
+                                          Weight: ='TextCanvas.Weight'.Bold
+                                          Width: =30
+                                    - icoSetaCima:
+                                        Control: Classic/Icon@2.5.0
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          BorderColor: =RGBA(0, 18, 107, 1)
+                                          Color: =RGBA(0, 18, 107, 1)
+                                          DisplayMode: =If(ThisItem.sequencia = 1, DisplayMode.Disabled,DisplayMode.Edit)
+                                          Height: =20
+                                          Icon: =Icon.ChevronUp
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          OnSelect: |-
+                                            =UpdateIf(coll_automacao_planner,ThisItem.sequencia -1 = sequencia && posto = ThisItem.posto,{sequencia:ThisItem.sequencia});
+                                            UpdateIf(coll_automacao_planner,ID=ThisItem.ID,{sequencia:ThisItem.sequencia -1});
+                                            Select(btn_obs)
+                                          Width: =40
+                                    - icoSetaBaixo:
+                                        Control: Classic/Icon@2.5.0
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          BorderColor: =RGBA(0, 18, 107, 1)
+                                          Color: =RGBA(0, 18, 107, 1)
+                                          DisplayMode: =If(Max(Filter(coll_automacao_planner,posto = ThisItem.posto And STATUS = 2),sequencia) = ThisItem.sequencia,DisplayMode.Disabled,DisplayMode.Edit)
+                                          Height: =20
+                                          Icon: =Icon.ChevronDown
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          OnSelect: |-
+                                            =UpdateIf(coll_automacao_planner,ThisItem.sequencia +1 = sequencia && posto = ThisItem.posto,{sequencia:ThisItem.sequencia});
+                                            UpdateIf(coll_automacao_planner,ID=ThisItem.ID,{sequencia:ThisItem.sequencia +1});
+                                            Select(btn_obs)
+                                          Width: =40
+                                    - icoLixeira:
+                                        Control: Classic/Icon@2.5.0
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          BorderColor: =RGBA(0, 18, 107, 1)
+                                          Color: =RGBA(0, 18, 107, 1)
+                                          Height: =20
+                                          Icon: =Icon.Trash
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          OnSelect: |-
+                                            =If(ThisItem.patan = varpatan, 
+                                                Set(varioselect,ThisItem);
+                                                UpdateContext({excluir_io:true});,
+                                                Patch(
+                                                    coll_automacao_planner,
+                                                    ThisItem,
+                                                    { 
+                                                        STATUS: 3,
+                                                        sequencia: Max(Filter(coll_automacao_planner, posto = ThisItem.posto),sequencia)+1
+                                                    }
+                                                );
+                                            );
+                                            Select(btn_obs)
+                                          PaddingLeft: =4
+                                          PaddingRight: =4
+                                          Width: =40
+                                    - btn_obs2:
+                                        Control: Button@0.0.45
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          BasePaletteColor: =Switch(ThisItem.obs,"Over",Color.OrangeRed,"Falta comp.",Color.Red)
+                                          DisplayMode: =If(IsBlank(ThisItem.obs),DisplayMode.Disabled, DisplayMode.Edit)
+                                          FontSize: =9
+                                          Height: =20
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          OnSelect: |-
+                                            =Set(varioselect,ThisItem);
+                                            UpdateContext({excluir_io:true});
+                                          PaddingBottom: =0
+                                          PaddingLeft: =0
+                                          PaddingRight: =0
+                                          PaddingTop: =0
+                                          Text: =ThisItem.obs
+                                          Width: =50
+                              - contBluePartKanban:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    Fill: =If(ThisItem.patan = varpatan, RGBA(0, 81, 100, 1), RGBA(158, 74, 45, 1))
+                                    FillPortions: =0
+                                    Height: =40
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMaxHeight: =
+                                    LayoutMaxWidth: =
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =150
+                                  Children:
+                                    - contPartsAndStock:
+                                        Control: GroupContainer@1.5.0
+                                        Variant: AutoLayout
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          DropShadow: =DropShadow.None
+                                          Height: =40
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          RadiusBottomLeft: =3
+                                          RadiusBottomRight: =3
+                                          RadiusTopLeft: =3
+                                          RadiusTopRight: =3
+                                          Width: =250
+                                        Children:
+                                          - contVerticalPartsAndStock:
+                                              Control: GroupContainer@1.5.0
+                                              Variant: AutoLayout
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                DropShadow: =DropShadow.None
+                                                Height: =40
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                RadiusBottomLeft: =3
+                                                RadiusBottomRight: =3
+                                                RadiusTopLeft: =3
+                                                RadiusTopRight: =3
+                                                Width: =250
+                                              Children:
+                                                - lblNameParts:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      Align: =Align.Center
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1.5
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Bold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =9
+                                                      Text: =ThisItem.material
+                                                - lblStock:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      Align: =Align.Center
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Semibold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =7
+                                                      Text: ="E:" & ThisItem.estoque_material_atual & " | " & "M:" & ThisItem.estoque_kanban_maximo & " | " & "D:" & ThisItem.diff_estoque_atual_e_estoque_max_kanban
+                                                      Tooltip: |-
+                                                        ="E = Estoque atual
+                                                        M = Estoque Máximo
+                                                        D = Diferença de estoque"
+                                    - contIcoHeaddersKanbanItems:
+                                        Control: GroupContainer@1.5.0
+                                        Variant: AutoLayout
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          DropShadow: =DropShadow.None
+                                          FillPortions: =0
+                                          Height: =40
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          RadiusBottomLeft: =3
+                                          RadiusBottomRight: =3
+                                          RadiusTopLeft: =3
+                                          RadiusTopRight: =3
+                                          Width: =50
+                                        Children:
+                                          - contVerticalIcoKanbans:
+                                              Control: GroupContainer@1.5.0
+                                              Variant: AutoLayout
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                DropShadow: =DropShadow.None
+                                                FillPortions: =0
+                                                Height: =40
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                RadiusBottomLeft: =3
+                                                RadiusBottomRight: =3
+                                                RadiusTopLeft: =3
+                                                RadiusTopRight: =3
+                                                Width: =25
+                                              Children:
+                                                - icoQtdKanbans:
+                                                    Control: Classic/Icon@2.5.0
+                                                    Properties:
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      Height: =20
+                                                      Icon: =Icon.Items
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      PaddingBottom: =2
+                                                      PaddingLeft: =4
+                                                      PaddingRight: =2
+                                                      PaddingTop: =2
+                                                      Tooltip: ="Kanbans"
+                                                      Width: =20
+                                                - icoPartsPerKanban:
+                                                    Control: Classic/Icon@2.5.0
+                                                    Properties:
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      Height: =20
+                                                      Icon: =Icon.Calculator
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      PaddingBottom: =4
+                                                      PaddingLeft: =1
+                                                      PaddingRight: =1
+                                                      PaddingTop: =2
+                                                      Tooltip: ="Quantidade por Kanban"
+                                                      Width: =20
+                                          - contVerticalNumberOfKanbansAndParts:
+                                              Control: GroupContainer@1.5.0
+                                              Variant: AutoLayout
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                DropShadow: =DropShadow.None
+                                                FillPortions: =0
+                                                Height: =40
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                RadiusBottomLeft: =3
+                                                RadiusBottomRight: =3
+                                                RadiusTopLeft: =3
+                                                RadiusTopRight: =3
+                                                Width: =25
+                                              Children:
+                                                - lblQuantityOfKanbans:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Bold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =9
+                                                      Text: =ThisItem.kanbans
+                                                - lblQuantityPartsPerKanban:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Bold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =9
+                                                      Text: =ThisItem.qtd_por_kanban
+                                    - contIcoPlus&Minus:
+                                        Control: GroupContainer@1.5.0
+                                        Variant: AutoLayout
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          DropShadow: =DropShadow.None
+                                          FillPortions: =0
+                                          Height: =40
+                                          LayoutDirection: =LayoutDirection.Vertical
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          RadiusBottomLeft: =3
+                                          RadiusBottomRight: =3
+                                          RadiusTopLeft: =3
+                                          RadiusTopRight: =3
+                                          Width: =30
+                                        Children:
+                                          - icoAddKanban:
+                                              Control: Classic/Icon@2.5.0
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                BorderColor: =RGBA(0, 18, 107, 1)
+                                                Color: =RGBA(255, 255, 255, 1)
+                                                Height: =20
+                                                Icon: =Icon.Add
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                OnSelect: |-
+                                                  =UpdateIf(coll_automacao_planner,ID=ThisItem.ID,{kanbans:ThisItem.kanbans +1});
+
+                                                  Select(btn_obs)
+                                                Width: =30
+                                                X: =40
+                                                Y: =40
+                                          - icoRemoveKanban:
+                                              Control: Classic/Icon@2.5.0
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                BorderColor: =RGBA(0, 18, 107, 1)
+                                                Color: =RGBA(255, 255, 255, 1)
+                                                Height: =20
+                                                Icon: =Icon.HorizontalLine
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                OnSelect: "=UpdateIf(coll_automacao_planner,ID=ThisItem.ID,{kanbans:ThisItem.kanbans -1});\r\n \r\n Select(btn_obs)"
+                                                PaddingLeft: =6
+                                                PaddingRight: =6
+                                                Width: =30
+                                                X: =40
+                                                Y: =40
+                              - txtBodyKanban:
+                                  Control: Text@0.0.51
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Height: =100
+                                    LayoutMaxHeight: =
+                                    LayoutMaxWidth: =
+                                    LayoutMinWidth: =0
+                                    PaddingLeft: =10
+                                    PaddingRight: =10
+                                    PaddingTop: =0
+                                    Size: =12
+                                    Text: |-
+                                      ="I: " & ThisItem.hora_prod_inicial & " - " & "F: " & ThisItem.hora_prod_final & " - " &  "Tempo: " & RoundUp(ThisItem.tempo_prod,0) & " Min." & "
+                                      " & "QTD. - " & ThisItem.kanbans & " Kbs = " & ThisItem.qtd_pecas_serem_produzidas & " Pçs" & "
+                                      " & Concat(
+                                          AddColumns(
+                                              Filter(
+                                                  coll_diagnostico_componentes,
+                                                  ID_Plano = ThisItem.ID
+                                              ),
+                                              LinhaFormatada,
+                                              Coalesce(
+                                                  "(" & If("EB6" in Codigo_Componente, "ESTAMPADO", "VtoV") & "): " &
+                                                  Codigo_Componente & " - " &
+                                                  Text(Qtd_Necessaria, "[$-pt-BR]0") & " PÇS"
+                                              )
+                                          ),
+                                          LinhaFormatada,
+                                          Char(10)
+                                      )
+                                    VerticalAlign: =VerticalAlign.Middle
+                  - lblMsgFaltaEstoque:
+                      Control: Text@0.0.51
+                      Properties:
+                        Align: ='TextCanvas.Align'.Center
+                        BorderColor: =RGBA(122, 138, 143, 1)
+                        BorderRadius: =10
+                        BorderStyle: =BorderStyle.Solid
+                        BorderThickness: =1
+                        Fill: =RGBA(255, 255, 0, 1)
+                        Height: =77
+                        Size: =12
+                        Text: |-
+                          ="Itens em falta de estoque:" &"
+                          "&
+                          Concat(
+                              AddColumns(
+                                  Filter(
+                                      coll_diagnostico_componentes,
+                                      ID_Plano = ThisItem.ID,Status_Estoque = "Falta Estoque"
+                                  ),
+                                  LinhaFormatada,
+                                  Coalesce(
+                                      "(" & If("EB6" in Codigo_Componente, "ESTAMPADO", "VtoV") & "): " &
+                                      Codigo_Componente & " - " &
+                                      Text(Estoque_Disponivel, "[$-pt-BR]0") & " PÇS"
+                                  )
+                              ),
+                              LinhaFormatada,
+                              Char(10)
+                          )
+                        VerticalAlign: =VerticalAlign.Middle
+                        Visible: ="Falta Estoque" in ShowColumns(Filter(coll_diagnostico_componentes,ID_Plano = ThisItem.ID),Status_Estoque)
+                        Weight: ='TextCanvas.Weight'.Bold
+                        Width: =183
+                        X: =15
+                        Y: =75
+      - contHeadderMainScreen:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.Semilight
+            Fill: =RGBA(0, 81, 100, 1)
+            Height: =86
+            LayoutDirection: =LayoutDirection.Vertical
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =App.Width
+          Children:
+            - contTitleHeadderMainScreend:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  DropShadow: =DropShadow.None
+                  FillPortions: =0
+                  Height: =50
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =10
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                Children:
+                  - icoBackMainMenu:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        AccessibleLabel: =Self.Tooltip
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =RGBA(255, 255, 255, 1)
+                        FocusedBorderThickness: |
+                          =0
+                        Height: =Parent.Height
+                        Icon: =Icon.ChevronLeft
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =0
+                        OnSelect: =Navigate(menuScreenPlanner)
+                        PaddingBottom: =10
+                        PaddingLeft: =5
+                        PaddingRight: =5
+                        PaddingTop: =10
+                        PressedFill: =RGBA(255, 255, 255, 0.3)
+                        TabIndex: =0
+                        Tooltip: ="Atualizar lista"
+                        Width: |+
+                          =50
+                  - lblMainTittle:
+                      Control: Label@2.5.1
+                      Properties:
+                        Align: =Align.Center
+                        AlignInContainer: =AlignInContainer.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(255, 255, 255, 1)
+                        Fill: =RGBA(58, 58, 58, 0)
+                        FillPortions: =1
+                        FocusedBorderThickness: |
+                          =0
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Bold
+                        Height: =Parent.Height
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =0
+                        OnSelect: =
+                        Size: =18
+                        Text: ="PROGRAMAÇÃO PLANNER - PATAN"
+                        Width: =//Parent.Width-IconRefresh1_1.Width-Button1_9.Width-IconRefresh1.Width
+                        Wrap: =false
+                        X: =88
+                  - icoDelleAllKanbans:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        AccessibleLabel: =Self.Tooltip
+                        AlignInContainer: =AlignInContainer.Stretch
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =RGBA(255, 255, 255, 1)
+                        FocusedBorderThickness: |
+                          =0
+                        Height: =Parent.Height
+                        Icon: =Icon.Trash
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        OnSelect: =UpdateContext({excluir_todos_kanbans:true});
+                        PaddingBottom: =10
+                        PaddingLeft: =5
+                        PaddingRight: =5
+                        PaddingTop: =10
+                        PressedFill: =RGBA(255, 255, 255, 0.3)
+                        TabIndex: =0
+                        Tooltip: ="Atualizar lista"
+                        Width: =50
+                        X: =457
+                  - icoRefreshMainScreen:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        AccessibleLabel: =Self.Tooltip
+                        AlignInContainer: =AlignInContainer.Stretch
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =RGBA(255, 255, 255, 1)
+                        FocusedBorderThickness: |
+                          =0
+                        Height: =Parent.Height
+                        Icon: =Icon.Reload
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        OnSelect: |-
+                          =UpdateContext({varcarregando:true});
+                          // 0. Criar coleção com postos da programação
+                          ClearCollect(colpostos,Distinct(Filter(list_automacaoPlanner_py,STATUS = 2 And (turno = 1 Or turno = 2 Or turno = 3)),posto));
+
+                          // 0.1 Criar VARIÁVEL DE TURNO
+                          Set(varturno,LookUp(list_automacaoPlanner_py,STATUS=2 And (turno = 1 Or turno = 2 Or turno = 3),turno));
+
+                          // 0.2 Criar VARIÁVEL DE PATAN
+                          Set(varpatan,LookUp(list_automacaoPlanner_py,STATUS=2 And (turno = 1 Or turno = 2 Or turno = 3),patan));
+
+                          // 0.3 Criar VARIÁVEL DE LINHA
+                          Set(varlinha,LookUp(list_automacaoPlanner_py,STATUS=2 And (turno = 1 Or turno = 2 Or turno = 3),linha));
+
+                          // 1. Cria uma coleção local limpa com os dados da origem.
+                          // 1. Cria uma coleção local limpa com os dados da origem.
+                          ClearCollect(coll_automacao_planner,list_automacaoPlanner_py);
+
+
+
+                          Select(btn_obs)
+                        PaddingBottom: =10
+                        PaddingLeft: =5
+                        PaddingRight: =5
+                        PaddingTop: =10
+                        PressedFill: =RGBA(255, 255, 255, 0.3)
+                        TabIndex: =0
+                        Tooltip: ="Atualizar lista"
+                        Width: =50
+                        X: =457
+                  - icoAddPlanner:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        AccessibleLabel: =Self.Tooltip
+                        AlignInContainer: =AlignInContainer.Stretch
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =RGBA(255, 255, 255, 1)
+                        FocusedBorderThickness: |
+                          =0
+                        Height: =Parent.Height
+                        Icon: =Icon.Add
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        OnSelect: |-
+                          =UpdateContext({varabririo:true});
+                          NewForm(formSolicitarKanban)
+                        PaddingBottom: =10
+                        PaddingLeft: =5
+                        PaddingRight: =5
+                        PaddingTop: =10
+                        PressedFill: =RGBA(255, 255, 255, 0.3)
+                        TabIndex: =0
+                        Tooltip: ="Atualizar lista"
+                        Visible: =CountRows(coll_automacao_planner)=0
+                        Width: =50
+                        X: =457
+                  - icoAddPlanner_1:
+                      Control: Classic/Icon@2.5.0
+                      Properties:
+                        AccessibleLabel: =Self.Tooltip
+                        AlignInContainer: =AlignInContainer.Stretch
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        Color: =RGBA(255, 255, 255, 1)
+                        FocusedBorderThickness: |
+                          =0
+                        Height: =Parent.Height
+                        Icon: =Icon.Send
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        OnSelect: "=UpdateContext({varcarregando: true});\n\n// 1) Atualiza status na coleção local\nUpdateIf(coll_automacao_planner, STATUS = 2, { STATUS: 9 });\n\n// 2) Seta lote a enviar\nClearCollect(colToUpload, Filter(coll_automacao_planner, STATUS = 9));\n\n// 3) Envia para o SharePoint\n// Cria uma trava de segurança\nUpdateContext({varErroEnvio: false});\n\nIfError(\n    // Sintaxe ultra-rápida: Atualiza apenas o STATUS buscando pelo ID exato\n    ForAll(\n        colToUpload As ItemLote,\n        Patch(\n            list_automacaoPlanner_py,\n            { ID: ItemLote.ID },         \n            { STATUS: ItemLote.STATUS }  \n        )\n    ),\n    // Se falhar, aciona a trava e avisa\n    UpdateContext({varErroEnvio: true});\n    Notify(\"Erro na comunicação com o SharePoint. Operação cancelada.\", NotificationType.Error)\n);\n\n// 4) Executa a Limpeza e o Automate APENAS SE NÃO DEU ERRO\nIf(\n    varErroEnvio = false,\n    \n    // Apaga permanentemente do SharePoint tudo que não for o lote atual (STATUS <> 9)\n    RemoveIf(list_automacaoPlanner_py, STATUS <> 9);\n\n    // Limpa as coleções locais para esvaziar a tela\n    Clear(coll_automacao_planner); \n    Clear(colToUpload);\n\n    // Aciona o fluxo do Automate\n    plannerAutomationSharepoint.Run(\"run\");\n    \n    Notify(\"Itens enviados ao Planner e base limpa com sucesso!\", NotificationType.Success)\n);\n\nUpdateContext({varcarregando: false})"
+                        PaddingBottom: =10
+                        PaddingLeft: =5
+                        PaddingRight: =5
+                        PaddingTop: =10
+                        PressedFill: =RGBA(255, 255, 255, 0.3)
+                        TabIndex: =0
+                        Tooltip: ="Enviar itens ao planner"
+                        Visible: =CountRows(coll_automacao_planner)<>0
+                        Width: =50
+                        X: =457
+            - contDetailsOfKanban:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  BorderColor: =RGBA(9, 33, 98, 1)
+                  DropShadow: =DropShadow.None
+                  Height: =80
+                  LayoutDirection: =LayoutDirection.Horizontal
+                  LayoutGap: =4
+                  LayoutJustifyContent: =LayoutJustifyContent.End
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  PaddingBottom: =2
+                  PaddingLeft: =10
+                  PaddingRight: =10
+                  PaddingTop: =2
+                  RadiusBottomLeft: =0
+                  RadiusBottomRight: =0
+                  RadiusTopLeft: =0
+                  RadiusTopRight: =0
+                  Width: =Parent.Width
+                  Y: =
+                Children:
+                  - txtPatanMainScreen:
+                      Control: Text@0.0.51
+                      Properties:
+                        Align: ='TextCanvas.Align'.Center
+                        AlignInContainer: =AlignInContainer.Stretch
+                        FillPortions: =1
+                        FontColor: =RGBA(255, 255, 255, 1)
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        Size: =22
+                        Text: |-
+                          ="Patan: " & varpatan
+                        VerticalAlign: =VerticalAlign.Middle
+                        Weight: ='TextCanvas.Weight'.Bold
+                  - txtTurnoMainScreen:
+                      Control: Text@0.0.51
+                      Properties:
+                        Align: ='TextCanvas.Align'.Center
+                        AlignInContainer: =AlignInContainer.Stretch
+                        FillPortions: =1
+                        FontColor: =RGBA(255, 255, 255, 1)
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        Size: =22
+                        Text: = varturno & "º Turno"
+                        VerticalAlign: =VerticalAlign.Middle
+                        Weight: ='TextCanvas.Weight'.Bold
+                  - txtLinhaMainScreen:
+                      Control: Text@0.0.51
+                      Properties:
+                        Align: ='TextCanvas.Align'.Center
+                        AlignInContainer: =AlignInContainer.Stretch
+                        FillPortions: =1
+                        FontColor: =RGBA(255, 255, 255, 1)
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        Size: =22
+                        Text: |-
+                          ="Linha: " & varlinha
+                        VerticalAlign: =VerticalAlign.Middle
+                        Weight: ='TextCanvas.Weight'.Bold
+                  - ButtonCanvas1:
+                      Control: Button@0.0.45
+                      Properties:
+                        AlignInContainer: =AlignInContainer.Stretch
+                        BasePaletteColor: =RGBA(246, 142, 104, 1)
+                        Height: =20
+                        Icon: ="ErrorCircle"
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        OnSelect: "=Set(ctn_criticas_vis, !ctn_criticas_vis)\r\n/*\r\nUpdateIf(\r\n    coll_automacao_planner; \r\n    STATUS = 3; \r\n    { \r\n        STATUS: 2;\r\n        sequencia: Filter(coll_automacao_planner; posto = )   \r\n    \r\n    });;\r\n*/\r\n\r\n"
+                        Text: "=\"Exibir Itens Críticos: \" & galleryKanbans_1.AllItemsCount "
+                        Width: =270
+                        X: =981
+                        Y: =59
+      - contSolicitarKanban:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(0, 0, 0, 0.22)
+            Height: =640
+            LayoutDirection: =LayoutDirection.Vertical
+            LayoutJustifyContent: =LayoutJustifyContent.Center
+            PaddingTop: =40
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =varabririo Or CountRows(coll_automacao_planner)=0
+            Width: =App.Width
+          Children:
+            - contTelaSolicitarKanban:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.Center
+                  DropShadow: =DropShadow.Regular
+                  Fill: =RGBA(255, 255, 255, 1)
+                  FillPortions: =0
+                  Height: =500
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  LayoutMinHeight: =0
+                  LayoutMinWidth: =0
+                  RadiusBottomLeft: =5
+                  RadiusBottomRight: =5
+                  RadiusTopLeft: =5
+                  RadiusTopRight: =5
+                  Width: =800
+                Children:
+                  - cabec_io_2:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(79, 90, 94, 1)
+                        FillPortions: =0
+                        Height: =40
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - LblAppName1_5:
+                            Control: Label@2.5.1
+                            Properties:
+                              Align: =Align.Center
+                              AlignInContainer: =AlignInContainer.Center
+                              BorderColor: =RGBA(0, 81, 100, 1)
+                              Color: =RGBA(255, 255, 255, 1)
+                              Fill: =RGBA(0, 81, 100, 1)
+                              FillPortions: =1
+                              FocusedBorderThickness: |
+                                =0
+                              Font: =Font.'Open Sans'
+                              FontWeight: =FontWeight.Bold
+                              Height: =Parent.Height
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinWidth: =0
+                              OnSelect: =
+                              Size: =16
+                              Text: ="SOLICITAR PATAN"
+                              Width: =//Parent.Width-IconRefresh1_1.Width-Button1_9.Width-IconRefresh1.Width
+                              Wrap: =false
+                              X: =88
+                        - icoExit:
+                            Control: Classic/Icon@2.5.0
+                            Properties:
+                              AccessibleLabel: =Self.Tooltip
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BorderColor: =RGBA(0, 81, 100, 1)
+                              Color: =RGBA(255, 255, 255, 1)
+                              Fill: =RGBA(0, 81, 100, 1)
+                              FocusedBorderThickness: |
+                                =0
+                              Height: =Parent.Height
+                              Icon: =Icon.Cancel
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              OnSelect: |-
+                                =UpdateContext({varabririo:false});
+                                ResetForm(formSolicitarKanban)
+                              PaddingBottom: =5
+                              PaddingLeft: =5
+                              PaddingRight: =5
+                              PaddingTop: =5
+                              PressedFill: =RGBA(255, 255, 255, 0.3)
+                              TabIndex: =0
+                              Tooltip: ="Atualizar lista"
+                              Width: =50
+                              X: =457
+                  - contFormSolicitarKanban:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Height: =500
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Vertical
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Y: |+
+                          =cabec_io_2.Height
+                      Children:
+                        - formSolicitarKanban:
+                            Control: Form@2.4.4
+                            Variant: Classic
+                            Layout: Vertical
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Center
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              DataSource: =list_solicitacao_planner_py
+                              DefaultMode: =FormMode.New
+                              Height: |+
+                                =500
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =15
+                              OnSuccess: |-
+                                =UpdateContext({varabririo:false});
+                                UpdateContext({varcarregando:true});
+                                Set(ligartimer,true);
+                              X: =Parent.X
+                            Children:
+                              - patan_DataCard2:
+                                  Control: TypedDataCard@1.0.7
+                                  Variant: ClassicAllowedValuesStringEdit
+                                  Properties:
+                                    AllowedValues: =DataSourceInfo([@list_automacaoPlanner_py], DataSourceInfo.AllowedValues, patan)
+                                    BorderColor: =RGBA(0, 18, 107, 1)
+                                    DataField: ="patan"
+                                    DisplayName: =DataSourceInfo([@list_automacaoPlanner_py],DataSourceInfo.DisplayName,patan)
+                                    Height: =120
+                                    Required: =true
+                                    Update: =valuePatanSolicitarKanban.Selected.Value
+                                    X: =0
+                                    Y: =0
+                                  Children:
+                                    - lblPatanSolicitarKanban:
+                                        Control: Label@2.5.1
+                                        MetadataKey: FieldName
+                                        Properties:
+                                          AutoHeight: =true
+                                          BorderColor: =RGBA(0, 0, 0, 1)
+                                          Color: =RGBA(0, 81, 100, 1)
+                                          Font: =Font.'Lato Black'
+                                          Height: =48
+                                          Text: ="Selecione o Patan:"
+                                          Width: =689
+                                          Wrap: =false
+                                          X: =30
+                                          Y: =Parent.Y+10
+                                    - valuePatanSolicitarKanban:
+                                        Control: Classic/ComboBox@2.4.0
+                                        Properties:
+                                          BorderColor: =RGBA(0, 18, 107, 1)
+                                          ChevronBackground: =RGBA(0, 81, 100, 1)
+                                          ChevronFill: =RGBA(255, 255, 255, 1)
+                                          ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                                          ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                                          DisplayFields: =["Value"]
+                                          Font: =Font.'Open Sans'
+                                          Height: =55
+                                          HoverFill: =RGBA(186, 202, 226, 1)
+                                          InputTextPlaceholder: =""
+                                          Items: =["A","B","C","D","E","F","G","H"]
+                                          PressedColor: =RGBA(255, 255, 255, 1)
+                                          PressedFill: =RGBA(0, 18, 107, 1)
+                                          SearchFields: =["Value"]
+                                          SelectMultiple: =false
+                                          SelectionColor: =RGBA(255, 255, 255, 1)
+                                          SelectionFill: =RGBA(56, 96, 178, 1)
+                                          Width: =Parent.Width - 60
+                                          X: =30
+                                          Y: =lblPatanSolicitarKanban.Y + lblPatanSolicitarKanban.Height + 5
+                              - turno_DataCard2:
+                                  Control: TypedDataCard@1.0.7
+                                  Variant: ClassicAllowedValuesNumberEdit
+                                  Properties:
+                                    AllowedValues: =DataSourceInfo([@list_automacaoPlanner_py], DataSourceInfo.AllowedValues, turno)
+                                    BorderColor: =RGBA(0, 18, 107, 1)
+                                    DataField: ="turno"
+                                    Default: =ThisItem.turno
+                                    DisplayName: =DataSourceInfo([@list_automacaoPlanner_py],DataSourceInfo.DisplayName,turno)
+                                    Height: =120
+                                    Required: =false
+                                    Update: =valueTurnoSolicitarKanban.Selected.Value
+                                    X: =0
+                                    Y: =1
+                                  Children:
+                                    - lblTurnoSolicitarKanban:
+                                        Control: Label@2.5.1
+                                        MetadataKey: FieldName
+                                        Properties:
+                                          AutoHeight: =true
+                                          BorderColor: =RGBA(0, 0, 0, 1)
+                                          Color: =RGBA(0, 81, 100, 1)
+                                          Font: =Font.'Lato Black'
+                                          Height: =48
+                                          Text: ="Selecione o Turno:"
+                                          Width: =Parent.Width - 60
+                                          Wrap: =false
+                                          X: =30
+                                          Y: =10
+                                    - valueTurnoSolicitarKanban:
+                                        Control: Classic/ComboBox@2.4.0
+                                        Properties:
+                                          BorderColor: =RGBA(0, 18, 107, 1)
+                                          ChevronBackground: =RGBA(0, 81, 100, 1)
+                                          ChevronFill: =RGBA(255, 255, 255, 1)
+                                          ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                                          ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                                          DisplayFields: =["chave"]
+                                          Font: =Font.'Open Sans'
+                                          Height: =55
+                                          HoverFill: =RGBA(186, 202, 226, 1)
+                                          InputTextPlaceholder: =""
+                                          Items: =[{chave:"1º Turno",Value:"1"},{chave:"2º Turno", Value:"2"},{chave:"3º Turno", Value:"3"}]
+                                          PressedColor: =RGBA(255, 255, 255, 1)
+                                          PressedFill: =RGBA(0, 18, 107, 1)
+                                          SearchFields: =["chave"]
+                                          SelectMultiple: =false
+                                          SelectionColor: =RGBA(255, 255, 255, 1)
+                                          SelectionFill: =RGBA(56, 96, 178, 1)
+                                          Width: =Parent.Width - 60
+                                          X: =30
+                                          Y: =lblTurnoSolicitarKanban.Y + lblTurnoSolicitarKanban.Height + 5
+                              - linha_DataCard2:
+                                  Control: TypedDataCard@1.0.7
+                                  Variant: ClassicAllowedValuesNumberEdit
+                                  Properties:
+                                    AllowedValues: =DataSourceInfo([@list_automacaoPlanner_py], DataSourceInfo.AllowedValues, linha)
+                                    BorderColor: =RGBA(0, 18, 107, 1)
+                                    DataField: ="linha"
+                                    Default: =ThisItem.linha
+                                    DisplayName: =DataSourceInfo([@list_automacaoPlanner_py],DataSourceInfo.DisplayName,linha)
+                                    Height: =120
+                                    Required: =false
+                                    Update: =DataCardValue12.Selected.valor
+                                    X: =0
+                                    Y: =2
+                                  Children:
+                                    - lblLinhaSolicitarKanban:
+                                        Control: Label@2.5.1
+                                        MetadataKey: FieldName
+                                        Properties:
+                                          AutoHeight: =true
+                                          BorderColor: =RGBA(0, 0, 0, 1)
+                                          Color: =RGBA(0, 81, 100, 1)
+                                          Font: =Font.'Lato Black'
+                                          Height: =48
+                                          Text: ="Selecione a Linha:"
+                                          Width: =Parent.Width - 60
+                                          Wrap: =false
+                                          X: =30
+                                          Y: =10
+                                    - DataCardValue12:
+                                        Control: Classic/ComboBox@2.4.0
+                                        Properties:
+                                          BorderColor: =RGBA(0, 18, 107, 1)
+                                          ChevronBackground: =RGBA(0, 81, 100, 1)
+                                          ChevronFill: =RGBA(255, 255, 255, 1)
+                                          ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                                          ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                                          DisplayFields: =["chave"]
+                                          Font: =Font.'Open Sans'
+                                          Height: =55
+                                          HoverFill: =RGBA(186, 202, 226, 1)
+                                          InputTextPlaceholder: =""
+                                          Items: =[{chave:"Linha 1",valor:"1"},{chave:"Linha 2", valor:"2"},{chave:"Linha 3", valor:"3"}]
+                                          PressedColor: =RGBA(255, 255, 255, 1)
+                                          PressedFill: =RGBA(0, 18, 107, 1)
+                                          SearchFields: =["chave"]
+                                          SelectMultiple: =false
+                                          SelectionColor: =RGBA(255, 255, 255, 1)
+                                          SelectionFill: =RGBA(0, 81, 100, 1)
+                                          Width: =Parent.Width - 60
+                                          X: =30
+                                          Y: =lblLinhaSolicitarKanban.Y + lblLinhaSolicitarKanban.Height + 5
+                              - STATUS_DataCard1:
+                                  Control: TypedDataCard@1.0.7
+                                  Variant: ClassicNumberEdit
+                                  Properties:
+                                    BorderColor: =RGBA(0, 18, 107, 1)
+                                    DataField: ="STATUS"
+                                    Default: =ThisItem.STATUS
+                                    DisplayName: =DataSourceInfo([@list_automacaoPlanner_py],DataSourceInfo.DisplayName,STATUS)
+                                    Required: =false
+                                    Update: =Value(DataCardValue1.Text)
+                                    Visible: =false
+                                    Width: =800
+                                    X: =0
+                                    Y: =3
+                                  Children:
+                                    - DataCardValue1:
+                                        Control: Classic/TextInput@2.3.2
+                                        MetadataKey: FieldValue
+                                        Properties:
+                                          BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                                          Default: =1
+                                          DelayOutput: =true
+                                          DisplayMode: =Parent.DisplayMode
+                                          Font: =Font.'Open Sans'
+                                          Format: =TextFormat.Number
+                                          HoverBorderColor: =RGBA(0, 18, 107, 1)
+                                          HoverFill: =RGBA(186, 202, 226, 1)
+                                          PaddingLeft: =5
+                                          RadiusBottomLeft: =0
+                                          RadiusBottomRight: =0
+                                          RadiusTopLeft: =0
+                                          RadiusTopRight: =0
+                                          Tooltip: =Parent.DisplayName
+                                          Width: =Parent.Width - 60
+                                          X: =30
+                                          Y: |+
+                                            =0
+                              - tipo_DataCard1:
+                                  Control: TypedDataCard@1.0.7
+                                  Variant: ClassicTextualEdit
+                                  Properties:
+                                    BorderColor: =RGBA(0, 18, 107, 1)
+                                    DataField: ="tipo"
+                                    Default: =ThisItem.tipo
+                                    DisplayName: =DataSourceInfo([@list_solicitacao_planner_py],DataSourceInfo.DisplayName,tipo)
+                                    MaxLength: =DataSourceInfo([@list_solicitacao_planner_py], DataSourceInfo.MaxLength, tipo)
+                                    Required: =false
+                                    Update: =DataCardValue2.Text
+                                    Visible: =false
+                                    Width: =800
+                                    X: =0
+                                    Y: =4
+                                  Children:
+                                    - DataCardValue2:
+                                        Control: Classic/TextInput@2.3.2
+                                        MetadataKey: FieldValue
+                                        Properties:
+                                          BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                                          Default: ="S"
+                                          DelayOutput: =true
+                                          DisplayMode: =Parent.DisplayMode
+                                          Font: =Font.'Open Sans'
+                                          HoverBorderColor: =RGBA(0, 18, 107, 1)
+                                          HoverFill: =RGBA(186, 202, 226, 1)
+                                          MaxLength: =Parent.MaxLength
+                                          PaddingLeft: =5
+                                          RadiusBottomLeft: =0
+                                          RadiusBottomRight: =0
+                                          RadiusTopLeft: =0
+                                          RadiusTopRight: =0
+                                          Tooltip: =Parent.DisplayName
+                                          Visible: =false
+                                          Width: =Parent.Width - 60
+                                          X: =30
+                                          Y: |+
+                                            =0
+                  - cabec_io_3:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(255, 255, 255, 1)
+                        FillPortions: =0
+                        Height: =80
+                        LayoutAlignItems: =LayoutAlignItems.Center
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
+                        LayoutJustifyContent: =LayoutJustifyContent.Center
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinHeight: =0
+                        LayoutMinWidth: =0
+                        RadiusBottomLeft: =5
+                        RadiusBottomRight: =5
+                        RadiusTopLeft: =5
+                        RadiusTopRight: =5
+                      Children:
+                        - btnSolicitarPatan:
+                            Control: Button@0.0.45
+                            Properties:
+                              Align: =Align.Center
+                              BasePaletteColor: =RGBA(141, 229, 250, 1)
+                              Font: =Font.'Lato Black'
+                              FontSize: =22
+                              Height: =50
+                              Icon: ="Checkmark"
+                              IconStyle: ='ButtonCanvas.IconStyle'.Filled
+                              Layout: ='ButtonCanvas.Layout'.IconAfter
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              OnSelect: =SubmitForm(formSolicitarKanban);
+                              Text: ="SOLICITAR PATAN"
+                              Width: =250
+      - contExcluirKanban:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(0, 0, 0, 0.4)
+            Height: =640
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingBottom: =200
+            PaddingLeft: =310
+            PaddingRight: =400
+            PaddingTop: =200
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =excluir_io
+            Width: =1136
+          Children:
+            - contTelaExcluirKanban:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  BorderColor: =RGBA(255, 255, 255, 1)
+                  BorderThickness: =1
+                  DropShadow: =DropShadow.Bold
+                  Fill: =RGBA(255, 255, 255, 1)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  RadiusBottomLeft: =20
+                  RadiusBottomRight: =20
+                  RadiusTopLeft: =20
+                  RadiusTopRight: =20
+                Children:
+                  - contHeadder:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(0, 81, 100, 1)
+                        FillPortions: =0
+                        Height: =50
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =0
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - icoBordaEsquerda:
+                            Control: Classic/Icon@2.5.0
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Color: =RGBA(0, 0, 0, 0)
+                              Icon: =Icon.Cancel
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              OnSelect: =
+                              PaddingBottom: =10
+                              PaddingTop: =10
+                              Width: =50
+                        - lblTitulo:
+                            Control: Label@2.5.1
+                            Properties:
+                              Align: =Align.Center
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Color: =RGBA(255, 255, 255, 1)
+                              Fill: =RGBA(0, 81, 100, 1)
+                              FillPortions: =1
+                              Font: =Font.'Open Sans'
+                              FontWeight: =FontWeight.Bold
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              Size: =14
+                              Text: ="Qual ação deseja realizar?"
+                        - icoBordaDireita:
+                            Control: Classic/Icon@2.5.0
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Color: =RGBA(255, 255, 255, 1)
+                              Icon: =Icon.Cancel
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              OnSelect: =UpdateContext({excluir_io:false});
+                              PaddingBottom: =10
+                              PaddingTop: =10
+                              Width: =50
+                  - contConteudo:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =3
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =30
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =0
+                        PaddingBottom: =50
+                        PaddingLeft: =50
+                        PaddingRight: =50
+                        PaddingTop: =50
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - btnExcluir:
+                            Control: Button@0.0.45
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BasePaletteColor: =RGBA(249, 83, 109, 1)
+                              FillPortions: =1
+                              FontSize: =20
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              OnSelect: |
+                                =Patch(coll_automacao_planner,varioselect,{STATUS:0});
+                                UpdateContext({excluir_io:false});
+                                UpdateIf(coll_automacao_planner,varioselect.sequencia +1 = sequencia && posto = varioselect.posto,{sequencia:varioselect.sequencia});
+                              Text: ="Excluir"
+                        - btnDiarioDeBordo:
+                            Control: Button@0.0.45
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BasePaletteColor: =RGBA(5, 102, 178, 1)
+                              FillPortions: =1
+                              FontSize: =20
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              OnSelect: |-
+                                =Patch(coll_automacao_planner,varioselect,{STATUS:0});
+                                UpdateContext({excluir_io:false});
+                                UpdateIf(coll_automacao_planner,varioselect.sequencia +1 = sequencia && posto = varioselect.posto,{sequencia:varioselect.sequencia});
+                              Text: ="Enviar para diário de bordo"
+      - ctn_pecas_criticas:
+          Control: GroupContainer@1.5.0
+          Variant: ManualLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(53, 61, 63, 0.45)
+            Height: =554
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =ctn_criticas_vis
+            Width: =1136
+            Y: =86
+          Children:
+            - galleryKanbans_1:
+                Control: Gallery@2.15.0
+                Variant: Vertical
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =RGBA(255, 255, 255, 1)
+                  Height: =554
+                  Items: |-
+                    =Filter(
+                    SortByColumns(coll_automacao_planner,"posto",SortOrder.Ascending,"sequencia",SortOrder.Ascending),STATUS = 3 And (turno = 1 Or turno = 2 Or turno = 3))
+                  TemplatePadding: =2
+                  TemplateSize: =167
+                  Width: =300
+                  X: =836
+                Children:
+                  - contKanban_1:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 0.49)
+                        BorderThickness: =1
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(255, 255, 255, 1)
+                        Height: =162
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =4
+                        RadiusBottomLeft: =5
+                        RadiusBottomRight: =5
+                        RadiusTopLeft: =5
+                        RadiusTopRight: =5
+                        Width: =282
+                        Y: =2
+                      Children:
+                        - contBodyKanban_1:
+                            Control: GroupContainer@1.5.0
+                            Variant: AutoLayout
+                            Properties:
+                              DropShadow: =DropShadow.None
+                              LayoutDirection: =LayoutDirection.Vertical
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              RadiusBottomLeft: =0
+                              RadiusBottomRight: =0
+                              RadiusTopLeft: =0
+                              RadiusTopRight: =0
+                            Children:
+                              - contBluePartKanban_1:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    Fill: =RGBA(158, 74, 45, 1)
+                                    FillPortions: =0
+                                    Height: =40
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMaxHeight: =
+                                    LayoutMaxWidth: =
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    RadiusBottomLeft: =0
+                                    RadiusBottomRight: =0
+                                    RadiusTopLeft: =0
+                                    RadiusTopRight: =0
+                                    Width: =150
+                                  Children:
+                                    - contIcoPlus&Minus_1:
+                                        Control: GroupContainer@1.5.0
+                                        Variant: AutoLayout
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          DropShadow: =DropShadow.None
+                                          FillPortions: =0
+                                          Height: =40
+                                          LayoutDirection: =LayoutDirection.Vertical
+                                          LayoutJustifyContent: =LayoutJustifyContent.Center
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          RadiusBottomLeft: =3
+                                          RadiusBottomRight: =3
+                                          RadiusTopLeft: =3
+                                          RadiusTopRight: =3
+                                          Width: =30
+                                        Children:
+                                          - icoAddKanban_1:
+                                              Control: Classic/Icon@2.5.0
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                BorderColor: =RGBA(0, 18, 107, 1)
+                                                Color: =RGBA(255, 255, 255, 1)
+                                                Height: =20
+                                                Icon: =Icon.Add
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                OnSelect: |-
+                                                  =Patch(
+                                                      coll_automacao_planner,
+                                                      ThisItem,
+                                                      { 
+                                                          STATUS: 2,
+                                                          sequencia: Max(Filter(coll_automacao_planner, posto = ThisItem.posto),sequencia)+1
+                                                      }
+                                                  );
+                                                  Select(btn_obs)
+                                                Width: =30
+                                                X: =40
+                                                Y: =40
+                                    - contPartsAndStock_1:
+                                        Control: GroupContainer@1.5.0
+                                        Variant: AutoLayout
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          DropShadow: =DropShadow.None
+                                          Height: =40
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          RadiusBottomLeft: =3
+                                          RadiusBottomRight: =3
+                                          RadiusTopLeft: =3
+                                          RadiusTopRight: =3
+                                          Width: =250
+                                        Children:
+                                          - contVerticalPartsAndStock_1:
+                                              Control: GroupContainer@1.5.0
+                                              Variant: AutoLayout
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                DropShadow: =DropShadow.None
+                                                Height: =40
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                RadiusBottomLeft: =3
+                                                RadiusBottomRight: =3
+                                                RadiusTopLeft: =3
+                                                RadiusTopRight: =3
+                                                Width: =250
+                                              Children:
+                                                - lblNameParts_1:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      Align: =Align.Center
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1.5
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Bold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =9
+                                                      Text: =ThisItem.material
+                                                - lblStock_1:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      Align: =Align.Center
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Semibold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =7
+                                                      Text: ="E:" & ThisItem.estoque_material_atual & " | " & "M:" & ThisItem.estoque_kanban_maximo & " | " & "D:" & ThisItem.diff_estoque_atual_e_estoque_max_kanban
+                                                      Tooltip: |-
+                                                        ="E = Estoque atual
+                                                        M = Estoque Máximo
+                                                        D = Diferença de estoque"
+                                    - contIcoHeaddersKanbanItems_1:
+                                        Control: GroupContainer@1.5.0
+                                        Variant: AutoLayout
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          DropShadow: =DropShadow.None
+                                          FillPortions: =0
+                                          Height: =40
+                                          LayoutDirection: =LayoutDirection.Horizontal
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          LayoutMinHeight: =0
+                                          LayoutMinWidth: =0
+                                          RadiusBottomLeft: =3
+                                          RadiusBottomRight: =3
+                                          RadiusTopLeft: =3
+                                          RadiusTopRight: =3
+                                          Width: =50
+                                        Children:
+                                          - contVerticalIcoKanbans_1:
+                                              Control: GroupContainer@1.5.0
+                                              Variant: AutoLayout
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                DropShadow: =DropShadow.None
+                                                FillPortions: =0
+                                                Height: =40
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                RadiusBottomLeft: =3
+                                                RadiusBottomRight: =3
+                                                RadiusTopLeft: =3
+                                                RadiusTopRight: =3
+                                                Width: =25
+                                              Children:
+                                                - icoQtdKanbans_1:
+                                                    Control: Classic/Icon@2.5.0
+                                                    Properties:
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      Height: =20
+                                                      Icon: =Icon.Items
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      PaddingBottom: =2
+                                                      PaddingLeft: =4
+                                                      PaddingRight: =2
+                                                      PaddingTop: =2
+                                                      Tooltip: ="Kanbans"
+                                                      Width: =20
+                                                - icoPartsPerKanban_1:
+                                                    Control: Classic/Icon@2.5.0
+                                                    Properties:
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      Height: =20
+                                                      Icon: =Icon.Calculator
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      PaddingBottom: =4
+                                                      PaddingLeft: =1
+                                                      PaddingRight: =1
+                                                      PaddingTop: =2
+                                                      Tooltip: ="Quantidade por Kanban"
+                                                      Width: =20
+                                          - contVerticalNumberOfKanbansAndParts_1:
+                                              Control: GroupContainer@1.5.0
+                                              Variant: AutoLayout
+                                              Properties:
+                                                AlignInContainer: =AlignInContainer.Center
+                                                DropShadow: =DropShadow.None
+                                                FillPortions: =0
+                                                Height: =40
+                                                LayoutDirection: =LayoutDirection.Vertical
+                                                LayoutMaxHeight: =
+                                                LayoutMaxWidth: =
+                                                LayoutMinHeight: =0
+                                                LayoutMinWidth: =0
+                                                RadiusBottomLeft: =3
+                                                RadiusBottomRight: =3
+                                                RadiusTopLeft: =3
+                                                RadiusTopRight: =3
+                                                Width: =25
+                                              Children:
+                                                - lblQuantityOfKanbans_1:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Bold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =9
+                                                      Text: =ThisItem.kanbans
+                                                - lblQuantityPartsPerKanban_1:
+                                                    Control: Label@2.5.1
+                                                    Properties:
+                                                      AlignInContainer: =AlignInContainer.Stretch
+                                                      BorderColor: =RGBA(0, 18, 107, 1)
+                                                      Color: =RGBA(255, 255, 255, 1)
+                                                      FillPortions: =1
+                                                      Font: =Font.'Open Sans'
+                                                      FontWeight: =FontWeight.Bold
+                                                      Height: =0
+                                                      LayoutMaxHeight: =
+                                                      LayoutMaxWidth: =
+                                                      LayoutMinHeight: =0
+                                                      LayoutMinWidth: =0
+                                                      PaddingBottom: =0
+                                                      PaddingLeft: =0
+                                                      PaddingRight: =0
+                                                      PaddingTop: =0
+                                                      Size: =9
+                                                      Text: =ThisItem.qtd_por_kanban
+                              - contHeadderKanban_1:
+                                  Control: GroupContainer@1.5.0
+                                  Variant: AutoLayout
+                                  Properties:
+                                    DropShadow: =DropShadow.None
+                                    FillPortions: =0
+                                    Height: =25
+                                    LayoutDirection: =LayoutDirection.Horizontal
+                                    LayoutMaxHeight: =
+                                    LayoutMaxWidth: =
+                                    LayoutMinHeight: =0
+                                    LayoutMinWidth: =0
+                                    PaddingLeft: =10
+                                    PaddingRight: =10
+                                    RadiusBottomLeft: =3
+                                    RadiusBottomRight: =3
+                                    RadiusTopLeft: =3
+                                    RadiusTopRight: =3
+                                    Width: =30
+                                  Children:
+                                    - btn_obs2_1:
+                                        Control: Button@0.0.45
+                                        Properties:
+                                          AlignInContainer: =AlignInContainer.Center
+                                          BasePaletteColor: =Switch(ThisItem.obs,"Over",Color.OrangeRed,"Falta comp.",Color.Red)
+                                          FontSize: =10
+                                          Height: =20
+                                          LayoutMaxHeight: =
+                                          LayoutMaxWidth: =
+                                          OnSelect: |-
+                                            =Set(varioselect,ThisItem);
+                                            UpdateContext({excluir_io:true});
+                                          PaddingBottom: =0
+                                          PaddingLeft: =0
+                                          PaddingRight: =0
+                                          PaddingTop: =0
+                                          Text: =ThisItem.obs
+                                          Visible: =!IsBlank(ThisItem.obs)
+                                          Width: =70
+                              - txtBodyKanban_1:
+                                  Control: Text@0.0.51
+                                  Properties:
+                                    AlignInContainer: =AlignInContainer.Stretch
+                                    Height: =100
+                                    LayoutMaxHeight: =
+                                    LayoutMaxWidth: =
+                                    LayoutMinWidth: =0
+                                    PaddingLeft: =10
+                                    PaddingRight: =10
+                                    PaddingTop: =0
+                                    Size: =12
+                                    Text: |-
+                                      ="Posto: " & ThisItem.posto & "
+                                      I: " & ThisItem.hora_prod_inicial & " - " & "F: " & ThisItem.hora_prod_final & " - " &  "Tempo: " & RoundUp(ThisItem.tempo_prod,0) & " Min." & "
+                                      " & "QTD. - " & ThisItem.kanbans & " Kbs = " & ThisItem.qtd_pecas_serem_produzidas & " Pçs" & "
+                                      " & Concat(
+                                          AddColumns(
+                                              Filter(
+                                                  coll_diagnostico_componentes,
+                                                  ID_Plano = ThisItem.ID
+                                              ),
+                                              LinhaFormatada,
+                                              Coalesce(
+                                                  "(" & If("EB6" in Codigo_Componente, "ESTAMPADO", "VtoV") & "): " &
+                                                  Codigo_Componente & " - " &
+                                                  Text(Qtd_Necessaria, "[$-pt-BR]0") & " PÇS"
+                                              )
+                                          ),
+                                          LinhaFormatada,
+                                          Char(10)
+                                      )
+                                    VerticalAlign: =VerticalAlign.Middle
+                  - lblMsgFaltaEstoque_1:
+                      Control: Text@0.0.51
+                      Properties:
+                        Align: ='TextCanvas.Align'.Center
+                        BorderColor: =RGBA(122, 138, 143, 1)
+                        BorderRadius: =10
+                        BorderStyle: =BorderStyle.Solid
+                        BorderThickness: =1
+                        Fill: =RGBA(255, 255, 0, 1)
+                        Height: =77
+                        Size: =12
+                        Text: |-
+                          ="Itens em falta de estoque:" &"
+                          "&
+                          Concat(
+                              AddColumns(
+                                  Filter(
+                                      coll_diagnostico_componentes,
+                                      ID_Plano = ThisItem.ID,Status_Estoque = "Falta Estoque"
+                                  ),
+                                  LinhaFormatada,
+                                  Coalesce(
+                                      "(" & If("EB6" in Codigo_Componente, "ESTAMPADO", "VtoV") & "): " &
+                                      Codigo_Componente & " - " &
+                                      Text(Estoque_Disponivel, "[$-pt-BR]0") & " PÇS"
+                                  )
+                              ),
+                              LinhaFormatada,
+                              Char(10)
+                          )
+                        VerticalAlign: =VerticalAlign.Middle
+                        Visible: ="Falta Estoque" in ShowColumns(Filter(coll_diagnostico_componentes,ID_Plano = ThisItem.ID),Status_Estoque)
+                        Weight: ='TextCanvas.Weight'.Bold
+                        Width: =210
+                        X: =10
+                        Y: =75
+      - btn_obs:
+          Control: Button@0.0.45
+          Properties:
+            FontSize: =7
+            Height: =29
+            OnSelect: |-
+              =// 2. Calcula a quantidade de peças para todos os itens na coleção.
+              UpdateIf(
+                  coll_automacao_planner,
+                  true,
+                  {qtd_pecas_serem_produzidas: kanbans * qtd_por_kanban}
+              );
+              // 3. Com a quantidade calculada, calcula o tempo de produção para todos os itens.
+              UpdateIf(
+                  coll_automacao_planner,
+                  true,
+                  {tempo_prod: ThisRecord.tempo_por_peca * ThisRecord.qtd_pecas_serem_produzidas}
+              );
+              // 4. Define o tempo inicial e final para o PRIMEIRO item (sequencia = 1).
+              UpdateIf(
+                  coll_automacao_planner,
+                  sequencia = 1,// Comparação numérica, sem aspas
+                  {
+                      hora_prod_inicial: Switch(
+                          ThisRecord.turno,
+                          1,
+                          "06:20",
+                          2,
+                          "14:40",
+                          3,
+                          "23:00"
+                      ),
+                      hora_prod_final: TimeValue(
+                          DateAdd(
+                              Switch(
+                                  ThisRecord.turno,
+                                  1,
+                                  "06:20",
+                                  2,
+                                  "14:40",
+                                  3,
+                                  "23:00"
+                              ),
+                              ThisRecord.tempo_prod,
+                              TimeUnit.Minutes
+                          )
+                      )
+                  }
+              );
+              // 5. Loop para calcular os itens restantes em ordem, garantindo a cascata de horários.
+              ForAll(
+                  Sort(
+                      Filter(
+                          coll_automacao_planner,
+                          sequencia <> 1 And STATUS = 2 
+                      ),
+                      sequencia
+                  ) As ItemAtual,
+                  With(
+                      {
+                          horaInicialCorreta: LookUp(
+                              coll_automacao_planner,
+                              posto = ItemAtual.posto && sequencia = ItemAtual.sequencia - 1 And STATUS = 2 ,
+                              hora_prod_final
+                          )
+                      },
+                      // --- SUBSTITUIÇÃO AQUI ---
+                      UpdateIf(
+                          coll_automacao_planner,
+                          ID = ItemAtual.ID,// A condição que encontra o registro único
+                          {
+                              hora_prod_inicial: horaInicialCorreta,
+                              hora_prod_final: TimeValue(
+                                  DateAdd(
+                                      horaInicialCorreta,
+                                      ItemAtual.tempo_prod,
+                                      TimeUnit.Minutes
+                                  )
+                              )
+                          }
+                      )
+                  )
+              );
+
+              // PASSO 6: Diagnóstico de componentes e verificação de estoque
+              // Primeiro, limpa a coleção de diagnóstico para garantir que os dados sejam sempre novos
+
+              Clear(coll_diagnostico_componentes);
+
+              // Itera sobre cada item do plano de produção já calculado
+              ForAll(
+                  coll_automacao_planner As ItemDoPlano,
+                  // Para cada item, agora iteramos sobre a string de componentes dele, quebrando-a em linhas
+                  ForAll(
+                      // A função Split transforma a string em uma tabela de uma coluna ("Result")
+                      Split(
+                          ItemDoPlano.comp_comb,
+                          "$$$$"
+                      ) As LinhaComponente,
+                      // O With aninhado ajuda a organizar e dar nome às variáveis, tornando a fórmula mais legível
+                      With(
+                          {
+                              // Quebra a linha "codigo | qtd | estoque" em partes
+                              PartesComponente: Split(LinhaComponente.Value, " | ")
+                          },
+                          With(
+                              {
+                                  // Pega cada parte e a transforma no tipo de dado correto (Texto ou Número)
+                                  // Trim() remove espaços em branco extras para evitar erros
+              codigo: Trim(
+                                      Index(PartesComponente,1).Value),
+                                  qtd_utilizada_por_peca: Value(Trim(
+                                      Index(PartesComponente,2).Value)),
+                                  estoque_disponivel: Value(
+                                      Trim(Index(PartesComponente,3).Value))
+                              },
+                              With(
+                                  {// AQUI ACONTECE O CÁLCULO PRINCIPAL
+                                      qtd_total_necessaria: ItemDoPlano.qtd_pecas_serem_produzidas * qtd_utilizada_por_peca},
+                                  // Coleta (adiciona) uma linha na nossa nova coleção de diagnóstico com todos os resultados
+                                  Collect(
+                                      coll_diagnostico_componentes,
+                                      {
+                                          // Adicionamos referências ao item "pai" para fácil rastreamento
+                                          ID_Plano: ItemDoPlano.ID,
+                                          Posto_Plano: ItemDoPlano.posto,
+                                          Sequencia_Plano: ItemDoPlano.sequencia,
+                                          // Detalhes do componente e do cálculo
+                                          Codigo_Componente: codigo,
+                                          Qtd_Necessaria: qtd_total_necessaria,
+                                          Estoque_Disponivel: estoque_disponivel,
+                                          Status_Estoque: If(
+                                              qtd_total_necessaria <= estoque_disponivel,
+                                              "OK",
+                                              "Falta Estoque"
+                                          )
+                                      }
+                                  )
+                              )
+                          )
+                      )
+                  )
+              );
+              UpdateContext({varcarregando:false});
+            Text: ="cód"
+            Visible: =false
+            Width: =18
+            X: =162
+            Y: =10
+      - temporizadorCarregando2:
+          Control: Timer@2.1.0
+          Properties:
+            AutoPause: =false
+            AutoStart: =ligartimer
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =ColorFade(Self.BorderColor, 70%)
+            DisabledColor: =ColorFade(Self.Fill, 90%)
+            DisabledFill: =ColorFade(Self.Fill, 70%)
+            Duration: =5000
+            Fill: =RGBA(56, 96, 178, 1)
+            Font: =Font.'Open Sans'
+            Height: =27
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnTimerStart: |+
+              =Switch(
+                  LookUp(list_solicitacao_planner_py,ID = formSolicitarKanban.LastSubmit.ID,STATUS),
+                  "2",
+                      Set(ligartimer,false);
+                      Notify("Sucesso",NotificationType.Success,5000);
+                      Select(icoRefreshMainScreen)
+                      );
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Repeat: =ligartimer
+            Visible: =false
+            Width: =78
+            X: =65
+            Y: =10
+      - contExcluirKanban_todos:
+          Control: GroupContainer@1.5.0
+          Variant: AutoLayout
+          Properties:
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(0, 0, 0, 0.4)
+            Height: =640
+            LayoutDirection: =LayoutDirection.Vertical
+            PaddingBottom: =200
+            PaddingLeft: =310
+            PaddingRight: =400
+            PaddingTop: =200
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Visible: =excluir_todos_kanbans
+            Width: =1136
+          Children:
+            - contTelaExcluirKanban_1:
+                Control: GroupContainer@1.5.0
+                Variant: AutoLayout
+                Properties:
+                  AlignInContainer: =AlignInContainer.SetByContainer
+                  BorderColor: =RGBA(255, 255, 255, 1)
+                  BorderThickness: =1
+                  DropShadow: =DropShadow.Bold
+                  Fill: =RGBA(255, 255, 255, 1)
+                  LayoutDirection: =LayoutDirection.Vertical
+                  LayoutMaxHeight: =
+                  LayoutMaxWidth: =
+                  RadiusBottomLeft: =20
+                  RadiusBottomRight: =20
+                  RadiusTopLeft: =20
+                  RadiusTopRight: =20
+                Children:
+                  - contHeadder_1:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        Fill: =RGBA(0, 81, 100, 1)
+                        FillPortions: =0
+                        Height: =50
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =20
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =0
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - icoBordaEsquerda_1:
+                            Control: Classic/Icon@2.5.0
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Color: =RGBA(0, 0, 0, 0)
+                              Icon: =Icon.Cancel
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              OnSelect: =
+                              PaddingBottom: =10
+                              PaddingTop: =10
+                              Width: =50
+                        - lblTitulo_1:
+                            Control: Label@2.5.1
+                            Properties:
+                              Align: =Align.Center
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Color: =RGBA(255, 255, 255, 1)
+                              Fill: =RGBA(0, 81, 100, 1)
+                              FillPortions: =1
+                              Font: =Font.'Open Sans'
+                              FontWeight: =FontWeight.Bold
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              Size: =14
+                              Text: ="Tem certeza que deseja excluir todos os kanbans?"
+                        - icoBordaDireita_1:
+                            Control: Classic/Icon@2.5.0
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BorderColor: =RGBA(0, 18, 107, 1)
+                              Color: =RGBA(255, 255, 255, 1)
+                              Icon: =Icon.Cancel
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              OnSelect: =UpdateContext({excluir_todos_kanbans:false});
+                              PaddingBottom: =10
+                              PaddingTop: =10
+                              Width: =50
+                  - contConteudo_1:
+                      Control: GroupContainer@1.5.0
+                      Variant: AutoLayout
+                      Properties:
+                        DropShadow: =DropShadow.None
+                        FillPortions: =3
+                        LayoutDirection: =LayoutDirection.Horizontal
+                        LayoutGap: =30
+                        LayoutMaxHeight: =
+                        LayoutMaxWidth: =
+                        LayoutMinWidth: =0
+                        PaddingBottom: =50
+                        PaddingLeft: =50
+                        PaddingRight: =50
+                        PaddingTop: =50
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                      Children:
+                        - btnExcluir_1:
+                            Control: Button@0.0.45
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              BasePaletteColor: =RGBA(249, 83, 109, 1)
+                              FillPortions: =1
+                              FontSize: =20
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              LayoutMinHeight: =0
+                              LayoutMinWidth: =0
+                              OnSelect: |-
+                                =UpdateContext({varcarregando:true});
+                                Remove(list_automacaoPlanner_py,list_automacaoPlanner_py);
+                                Select(icoRefreshMainScreen);
+                                UpdateContext({excluir_todos_kanbans:false});
+                              Text: ="Excluir"
+                        - btnDiarioDeBordo_1:
+                            Control: Button@0.0.45
+                            Properties:
+                              AlignInContainer: =AlignInContainer.Stretch
+                              FillPortions: =1
+                              FontSize: =20
+                              LayoutMaxHeight: =
+                              LayoutMaxWidth: =
+                              OnSelect: =UpdateContext({excluir_todos_kanbans:false});
+                              Text: ="Voltar a tela principal"
+      - Carregando_2:
+          Control: CanvasComponent
+          ComponentName: Carregando
+          Properties:
+            Fill: =RGBA(255, 255, 255, 1)
+            Visible: =varcarregando
+            Width: =1136

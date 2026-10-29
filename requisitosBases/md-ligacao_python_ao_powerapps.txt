@@ -1,0 +1,220 @@
+MD 1:
+# 📚 DOSSIÊ DE SISTEMA: PYTHON + SHAREPOINT + POWER APPS + PLANNER
+
+Este documento contém o estado final, regras de negócio e os códigos de integração do sistema de sequenciamento e criação de Kanbans no Planner.
+
+## 1. REGRAS DE NEGÓCIO E SEQUENCIAMENTO (PYTHON)
+**Arquivo de Referência:** `planner_logic.py` (Lógica de dataframes)
+*   **Problema Corrigido:** Itens críticos (Status 3) estavam roubando a numeração da produção normal e quebrando a "escadinha" de horários no app.
+*   **Regra de Sequência Adotada:** 
+    *   **Produção Normal (`STATUS == 2`):** Recebem numeração sequencial (`1, 2, 3...`).
+    *   **Itens Críticos/Extras (`STATUS == 3`):** Recebem `sequencia = 0`.
+    *   **Cabeçalhos de Turno (Ex: "1º TURNO"):** Recebem `sequencia = 0`.
+*   **Aplicação:** Uso de máscaras booleanas no `groupby` do Pandas para que a iteração de sequência afete exclusivamente os itens de Status 2.
+
+---
+
+## 2. BACKEND: INTEGRAÇÃO GRAPH API E BATCHING
+**Arquivo de Referência:** `sharepoint_utils.py`
+*   **Problema Corrigido:** Timeout, limite de requisições (Erro 429 - Throttling) e expiração de token ao enviar mais de 170 itens. O envio demorava +5 minutos.
+*   **Soluções Aplicadas:**
+    1.  **Globalização do MSAL:** O `ConfidentialClientApplication` foi instanciado globalmente para gerenciar o cache do token de forma nativa.
+    2.  **JSON Batching (Envio Assíncrono/Lotes):** Uso do endpoint `/$batch` para enviar 20 itens por vez em uma única requisição HTTP.
+    3.  **Tratamento de Throttling:** Pausa estratégica (`time.sleep`) se a API da Microsoft retornar erro 429.
+
+### Código Python Atualizado (`send_data_to_sharepoint_graph`):
+```python
+import requests
+import pandas as pd
+import time
+from datetime import datetime, date
+from msal import ConfidentialClientApplication
+import config
+
+# Configurações API e MSAL Global (Cache nativo)
+GRAPH_SCOPE = ["[https://graph.microsoft.com/.default](https://graph.microsoft.com/.default)"]
+AUTHORITY_URL = f"[https://login.microsoftonline.com/](https://login.microsoftonline.com/){config.TENANT_ID}"
+
+msal_app = ConfidentialClientApplication(
+    client_id=config.CLIENT_ID,
+    authority=AUTHORITY_URL,
+    client_credential=config.CLIENT_SECRET
+)
+
+def get_graph_token():
+    token_response = msal_app.acquire_token_for_client(scopes=GRAPH_SCOPE)
+    if "access_token" in token_response:
+        return token_response["access_token"]
+    raise Exception(f"Falha ao obter token: {token_response.get('error_description')}")
+
+def send_data_to_sharepoint_graph(df: pd.DataFrame, list_name: str):
+    """Envia um DataFrame para o SharePoint usando Batch Requests (Lotes de 20)."""
+    try:
+        token = get_graph_token()
+        site_id = get_site_id(token) # Pressupõe função get_site_id existente
+        list_id = get_list_id(token, site_id, list_name) # Pressupõe função get_list_id
+        
+        batch_endpoint = "[https://graph.microsoft.com/v1.0/$batch](https://graph.microsoft.com/v1.0/$batch)"
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        batch_size = 20 
+        all_items = df.to_dict('records')
+        
+        for i in range(0, len(all_items), batch_size):
+            batch_chunk = all_items[i:i + batch_size]
+            batch_payload = {"requests": []}
+            
+            for j, row in enumerate(batch_chunk):
+                item_properties = {}
+                for df_col, sp_col in config.DF_TO_SP_MAP.items():
+                    if df_col in row and pd.notna(row[df_col]):
+                        value = row[df_col]
+                        if isinstance(value, (datetime, pd.Timestamp, date)):
+                            item_properties[sp_col] = value.isoformat()
+                        else:
+                            item_properties[sp_col] = str(value)
+                
+                request_id = str(i + j + 1)
+                batch_payload["requests"].append({
+                    "id": request_id,
+                    "method": "POST",
+                    "url": f"/sites/{site_id}/lists/{list_id}/items",
+                    "body": {"fields": item_properties},
+                    "headers": {"Content-Type": "application/json"}
+                })
+            
+            response = requests.post(batch_endpoint, headers=headers, json=batch_payload)
+            
+            # Tratamento de Throttling (Erro 429)
+            if response.status_code == 429:
+                 time.sleep(10)
+                 response = requests.post(batch_endpoint, headers=headers, json=batch_payload)
+                 
+            response.raise_for_status()
+            
+    except Exception as e:
+        print(f"Erro Crítico ao enviar dados via Batch Graph: {e}")
+
+3. FRONTEND: POWER APPS (LÓGICA DE DISPARO E LIMPEZA)
+Local de Referência: Botão de envio ao Planner (icoAddPlanner_1)
+
+Problema Corrigido: O Power Apps travava ao tentar fazer Patch da tabela inteira no loop ForAll e apagava os dados físicos via RemoveIf prematuramente mesmo quando a requisição falhava.
+
+Sintaxe Adotada: Padrão Brasil (argumentos separados por ; e encadeamento por ;;).
+
+Código Power Apps Atualizado:
+Snippet de código
+UpdateContext({varcarregando: true});;
+
+// 1) Atualiza status na coleção local
+UpdateIf(coll_automacao_planner; STATUS = 2; { STATUS: 9 });;
+
+// 2) Seta lote a enviar
+ClearCollect(colToUpload; Filter(coll_automacao_planner; STATUS = 9));;
+
+// 3) Envia para o SharePoint (Patch ultra-rápido focado apenas no ID e STATUS)
+UpdateContext({varErroEnvio: false});;
+
+IfError(
+    ForAll(
+        colToUpload As ItemLote;
+        Patch(
+            list_automacaoPlanner_py;
+            { ID: ItemLote.ID };         
+            { STATUS: ItemLote.STATUS }  
+        )
+    );
+    // Trava de segurança caso a rede caia ou o SharePoint bloqueie
+    UpdateContext({varErroEnvio: true});;
+    Notify("Erro na comunicação com o SharePoint. Operação cancelada."; NotificationType.Error)
+);;
+
+// 4) Executa a Limpeza e o Automate APENAS SE NÃO DEU ERRO no envio
+If(
+    varErroEnvio = false;
+    
+    // Apaga do banco de dados (SharePoint) TUDO que não for do lote atual
+    RemoveIf(list_automacaoPlanner_py; STATUS <> 9);;
+
+    // Limpa a tela e a memória do app
+    Clear(coll_automacao_planner);; 
+    Clear(colToUpload);;
+
+    // Dispara o Power Automate para criar as tarefas no Planner
+    plannerAutomationSharepoint.Run("run");;
+    
+    Notify("Itens enviados ao Planner e base limpa com sucesso!"; NotificationType.Success)
+);;
+
+UpdateContext({varcarregando: false})
+4. ORQUESTRAÇÃO: POWER AUTOMATE (CRIAÇÃO DOS CARDS NO PLANNER)
+Fluxo: plannerAutomationSharepoint
+
+Problemas Corrigidos: Erros de escopo aninhado (ExpressionEvaluationFailed), falha no Switch devido a tipagem (Float vs Int), erros de data e erro Forbidden 403 por falha de privilégios.
+
+Estrutura Definitiva do Fluxo:
+Gatilho: PowerApps (V2) com parâmetro de texto "run".
+
+Obter Itens (SharePoint): Filtro de Consulta (OData): STATUS eq 9.
+
+Aplicar a cada (Apply to each):
+
+Estabilizadores (Ações "Compor"): Cruciais para evitar que o fluxo perca a referência do item dentro do Switch e das Condições.
+
+Compor Linha: item()?['linha']
+
+Compor Material: item()?['material']
+
+Compor Tags: item()?['tags']
+
+Compor Descricao: item()?['descricao_planner']
+
+Switch (Alternar "Opção"):
+
+Campo Ativado: int(outputs('Compor-Linha')) (O int previne erros se o SP mandar '1.0' em vez de '1').
+
+Casos: 1, 2, 3 (direcionando para Planos e Buckets específicos de cada linha).
+
+Condição (Dentro de cada Caso - isTurno):
+
+Expressão (Esquerda): toUpper(outputs('Compor-Material'))
+
+Operador: contém
+
+Valor (Direita): TURNO
+
+Caminho SE SIM (Criar Turno):
+
+Ação "Criar uma tarefa (V4)".
+
+Campo StartDateTime: DEIXAR EM BRANCO (Turnos não recebem datas, evita quebra).
+
+Labels baseadas na expressão: contains(outputs('Compor-Tags'), 'NOME_DA_TAG').
+
+Caminho SE NÃO (Criar Peça):
+
+Ação "Criar uma tarefa (V4)" (Mapeando datas).
+
+Ação "Atualizar detalhes da tarefa (V2)" (Recebe o Checklist com os 5 passos padrão e a Compor Descricao).
+
+Limpeza da Fila (Final do Loop):
+
+Ação "Atualizar Item" no SharePoint. Pega o ID do item atual e define STATUS = 2 para evitar duplicação futura.
+
+Configuração de Segurança: Para evitar o erro Forbidden, o fluxo possui a configuração "Usuários de somente execução" definida para usar a conexão fixada e autenticada do proprietário, permitindo que qualquer usuário do Power Apps consiga enviar cards para os Planners da fábrica.
+
+MD 2 -
+# Contexto do Projeto: Integração Planner, Power Apps e Excel
+
+## 1. Arquitetura e Integração
+*   **Power Automate (Low-Code):** Responsável por ler a planilha Excel e criar os cards no Planner. O fluxo padrão utiliza a ação "Listar linhas presentes numa tabela" seguida por um loop "Aplicar a cada", executando as ações "Criar uma tarefa" e "Atualizar detalhes da tarefa".
+*   **Microsoft Graph API (Backend):** Utilizada para requisições HTTP personalizadas. Não há necessidade de licença Premium para manipular cards e planos. As operações requerem apenas as permissões de aplicativo no Entra ID (ex: `Tasks.ReadWrite`, `Group.ReadWrite.All`) e a licença padrão do Microsoft 365.
+*   **Repositório Base:** Os arquivos do projeto estão no repositório `G-PlannerProjects`. A análise e depuração de código (Power Fx ou Backend) será feita enviando os trechos de código ou links "Raw" diretamente no chat.
+
+## 2. Regras de Negócio e Estrutura de Dados (Excel)
+*   **Atualização do Identificador ("Patan"):** O código de identificação ("patan") na planilha foi alterado de 4 letras para **8 letras**.
+*   **Formatação:** Os dados no Excel devem estar obrigatoriamente formatados como **Tabela** para permitir a leitura correta pelo Power Automate.
+
+## 3. Checklist de Atualização para o Novo Desenvolvimento
+Para garantir que a integração Power Apps -> Excel -> Planner funcione perfeitamente com a mudança do "Patan", os seguintes ajustes são necessários no código e nos fluxos:
+*   **Lógica de Extração no Power Apps / Automate:** Atualizar funções de texto em Power Fx ou expressões do Power Automate. Alterar lógicas de corte (como `substring(campo, 0, 4)` ou `Left(campo, 4)`) para capturar e processar os novos **8 caracteres**.
+*   **Condicionais de Roteamento:** Revisar as regras (If/Switch) que definem o direcionamento para os "Buckets" no Planner, assegurando que a comparação seja feita utilizando a nova string de 8 letras.
