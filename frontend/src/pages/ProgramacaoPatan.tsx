@@ -19,6 +19,7 @@ import {
   SlidersHorizontal,
   Boxes,
   Upload,
+  TableProperties,
 } from "lucide-react";
 
 import { useAuth } from "../auth/AuthContext";
@@ -210,11 +211,13 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
   const [painelCriticosAberto, setPainelCriticosAberto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  // Alternador de visão (Cards vs Seisan Kanriban Timeline) e densidade (Compacto vs Detalhado)
-  const [modoVisao, setModoVisao] = useState<"cards" | "timeline">("cards");
+  // Alternador de visão (Quadro vs Tabela vs Linha do Tempo) e densidade (Compacto vs Detalhado)
+  const [modoVisao, setModoVisao] = useState<"cards" | "tabela" | "timeline">("cards");
   const [modoCompacto, setModoCompacto] = useState<boolean>(false);
   const [acoesExpandidas, setAcoesExpandidas] = useState<boolean>(false);
   const [itemParaEditar, setItemParaEditar] = useState<ItemProducao | null>(null);
+  const [buscaTabelaProg, setBuscaTabelaProg] = useState<string>("");
+  const [postoTabelaProg, setPostoTabelaProg] = useState<string>("TODOS");
 
   function handleDataProgramacaoChange(novaData: string) {
     if (!novaData || novaData === dataProgramacao) return;
@@ -881,53 +884,128 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
   }
 
   return (
-    <div
-      className={`w-full transition-all duration-150 ${
-        modoVisao === "timeline" ? "px-2 sm:px-3 py-3" : "px-6 py-6"
-      }`}
-    >
-      {/* Cockpit Superior Unificado (Header Limpo & Controles de Programação) */}
-      <div className="mb-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xs">
-        {/* Linha Superior: Título / Setor e Ações Primárias */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/80">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              Programação
-            </h1>
+    <div className="w-full min-h-[calc(100vh-3.5rem)] px-3 sm:px-4 py-2.5 transition-all duration-150">
+      <h1 className="sr-only">
+        Programação — {setor === "estamparia" ? "Estamparia" : "Solda"}
+      </h1>
 
+      {/* Barra de Controle Compacta e Padronizada (Proporções Fixas em Todas as Visões e Setores) */}
+      <div className="mb-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
+        {/* Linha 1: Setor, Alternador de Visão (Quadro/Tabela/Linha do Tempo), Densidade e Ações */}
+        <div className="px-3 py-1.5 border-b border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
+          {/* Esquerda: Setor + Visões + Densidade (Mesmas Posições da Produção) */}
+          <div className="flex flex-wrap items-center gap-2">
             {/* Alternador Rápido de Setor */}
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800/90 rounded-lg p-0.5 border border-slate-200/80 dark:border-slate-700">
+            <div className="flex items-center h-7 rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700 text-xs font-semibold">
               {podeVerSolda && (
                 <SafeLink
                   to={`/programacao/solda${linhaParam ? `?linha=${encodeURIComponent(linhaParam)}` : ""}`}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1 h-full px-2.5 rounded-md transition-all ${
                     setor === "solda"
                       ? "bg-emerald-600 text-white shadow-2xs font-bold"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
-                  <Zap className="w-3.5 h-3.5" />
-                  <span>⚡ Solda</span>
+                  <Zap className="w-3 h-3" />
+                  <span>Solda</span>
                 </SafeLink>
               )}
               {podeVerEstamparia && (
                 <SafeLink
                   to={`/programacao/estamparia${linhaParam ? `?linha=${encodeURIComponent(linhaParam)}` : ""}`}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1 h-full px-2.5 rounded-md transition-all ${
                     setor === "estamparia"
                       ? "bg-indigo-600 text-white shadow-2xs font-bold"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
-                  <Factory className="w-3.5 h-3.5" />
-                  <span>🏭 Estamparia</span>
+                  <Factory className="w-3 h-3" />
+                  <span>Estamparia</span>
                 </SafeLink>
               )}
             </div>
+
+            <span className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+
+            {/* Alternador de Visão: Quadro / Tabela / Linha do Tempo */}
+            <div className="flex items-center h-7 rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setModoVisao("cards")}
+                title="Visualização em Quadro Kanban"
+                className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  modoVisao === "cards"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>Quadro</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoVisao("tabela")}
+                title="Visualização em Tabela Detalhada"
+                className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  modoVisao === "tabela"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+              >
+                <TableProperties className="w-3.5 h-3.5" />
+                <span>Tabela</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoVisao("timeline")}
+                title="Visualização em Linha do Tempo (Seisan Kanriban)"
+                className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  modoVisao === "timeline"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Linha do Tempo</span>
+              </button>
+            </div>
+
+            {/* Alternador de Densidade dos Cards (Mantém posição fixa em todas as visões) */}
+            <button
+              type="button"
+              disabled={modoVisao !== "cards"}
+              onClick={() => setModoCompacto((prev) => !prev)}
+              title={
+                modoVisao !== "cards"
+                  ? "Disponível na visão de Quadro"
+                  : modoCompacto
+                  ? "Expandir todos os cartões (visão detalhada com estoque)"
+                  : "Compactar todos os cartões (visão minimalista)"
+              }
+              className={`flex items-center gap-1.5 h-7 px-2.5 rounded-lg border text-xs font-semibold transition-all ${
+                modoVisao !== "cards"
+                  ? "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-400 dark:text-slate-600 opacity-50 cursor-not-allowed"
+                  : modoCompacto
+                  ? "border-indigo-300 dark:border-indigo-700 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 shadow-2xs cursor-pointer"
+                  : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs cursor-pointer"
+              }`}
+            >
+              {modoCompacto ? (
+                <>
+                  <Maximize2 className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                  <span>Modo Compacto</span>
+                </>
+              ) : (
+                <>
+                  <Minimize2 className="w-3 h-3 text-slate-500" />
+                  <span>Modo Detalhado</span>
+                </>
+              )}
+            </button>
           </div>
 
-          {/* Botões de Ação da Programação */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Direita: Botões de Ação da Programação */}
+          <div className="flex flex-wrap items-center gap-1.5">
             {/* Botão: + Inserir Card */}
             <button
               type="button"
@@ -939,11 +1017,11 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
                 setModalInserirAberto(true);
               }}
               title="Adiciona um novo card/peça manualmente à fila de programação deste lote (Ctrl + I)"
-              className="flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition-colors cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>+ Inserir Card</span>
-              <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.2 text-[10px] font-mono bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-600">
+              <kbd className="hidden sm:inline-block ml-0.5 px-1 py-0.2 text-[10px] font-mono bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-600">
                 Ctrl+I
               </kbd>
             </button>
@@ -953,10 +1031,10 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
               <button
                 type="button"
                 onClick={() => setAcoesExpandidas((prev) => !prev)}
-                className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-2xs transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 h-7 rounded-lg border px-2.5 text-xs font-semibold shadow-2xs transition-all cursor-pointer ${
                   acoesExpandidas
                     ? "border-indigo-400 dark:border-indigo-500 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300"
-                    : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+                    : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
                 }`}
                 title="Expandir ações de dados (Montar Padrão, Atualizar SAP, Sincronizar Excel)"
               >
@@ -1080,10 +1158,10 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
               type="button"
               onClick={() => setPainelCriticosAberto(true)}
               title="Abrir gaveta de peças críticas e quarentena (Ctrl + K)"
-              className={`relative flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-2xs transition-all ${
+              className={`relative flex items-center gap-1.5 h-7 rounded-lg border px-2.5 text-xs font-semibold shadow-2xs transition-all cursor-pointer ${
                 criticosConsolidados.length > 0
                   ? "border-red-300 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20"
-                  : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50"
+                  : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
               }`}
             >
               {criticosConsolidados.length > 0 && (
@@ -1098,7 +1176,7 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
                   {criticosIncluidos.size}
                 </span>
               )}
-              <kbd className="hidden sm:inline-block ml-0.5 px-1.5 py-0.2 text-[10px] font-mono bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
+              <kbd className="hidden sm:inline-block ml-0.5 px-1 py-0.2 text-[10px] font-mono bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
                 Ctrl+K
               </kbd>
             </button>
@@ -1110,32 +1188,28 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
               onClick={handleEnviar}
               disabled={enviando}
               title="Enviar lote persistido para o chão de fábrica (Ctrl + Enter)"
-              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 h-7 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 text-xs font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{enviando ? "Enviando..." : "Enviar lote"}</span>
-              <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.2 text-[10px] font-mono bg-emerald-700 text-emerald-100 rounded">
+              <kbd className="hidden sm:inline-block ml-0.5 px-1 py-0.2 text-[10px] font-mono bg-emerald-700 text-emerald-100 rounded">
                 Ctrl+Enter
               </kbd>
             </button>
           </div>
         </div>
 
-        {/* Linha Inferior: Cockpit Estruturado em 2 Clusters Lógicos e Responsivos */}
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pt-3">
-          {/* Cluster 1: Escopo do Lote (Linha, Turno, Patan, Data) */}
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 p-1.5 shadow-2xs">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-1">
-              Escopo
-            </span>
-
+        {/* Linha 2: Escopo do Lote (Linha, Turno, Patan, Data, Continuidade) e Modo de Dimensionamento */}
+        <div className="px-3 py-1.5 bg-slate-50/70 dark:bg-slate-900/50 rounded-b-xl flex flex-wrap items-center justify-between gap-2">
+          {/* Esquerda: Filtros de Escopo */}
+          <div className="flex flex-wrap items-center gap-2">
             <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <span className="text-slate-500 font-normal">Linha:</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Linha</span>
               <select
                 aria-label="Linha"
                 value={linha}
                 onChange={(event) => handleLinhaChange(event.target.value)}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs"
+                className="h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-2xs"
               >
                 {linhasDisponiveis.map((item) => (
                   <option key={item.valor} value={item.valor}>
@@ -1145,15 +1219,15 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
               </select>
             </label>
 
-            <span className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            <span className="h-3.5 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
 
             <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <span className="text-slate-500 font-normal">Turno:</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Turno</span>
               <select
                 aria-label="Turno"
                 value={turno}
                 onChange={(event) => setTurno(Number(event.target.value))}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono cursor-pointer shadow-2xs"
+                className="h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono cursor-pointer shadow-2xs"
               >
                 {[1, 2, 3].map((t) => {
                   const ocorrencias = resumoPatans?.[patan];
@@ -1169,15 +1243,15 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
               </select>
             </label>
 
-            <span className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            <span className="h-3.5 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
 
             <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <span className="text-slate-500 font-normal">Patan:</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Patan</span>
               <select
                 aria-label="Patan"
                 value={patan}
                 onChange={(event) => handlePatanChange(event.target.value)}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2.5 py-1 text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono cursor-pointer shadow-2xs"
+                className="h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono cursor-pointer shadow-2xs"
               >
                 {patansDisponiveis.map((letra) => {
                   const ocorrencias = resumoPatans?.[letra];
@@ -1195,16 +1269,16 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
               </select>
             </label>
 
-            <span className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            <span className="h-3.5 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
 
             <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <span className="text-slate-500 font-normal">Data:</span>
-              <div className="flex items-center bg-white dark:bg-slate-700 rounded-lg border border-slate-300 dark:border-slate-600 p-0.5 shadow-2xs">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Data</span>
+              <div className="flex items-center gap-0.5 h-7 bg-white dark:bg-slate-800 rounded-lg border border-slate-300 dark:border-slate-700 px-1.5 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => handleNavegarDiaProgramacao(-1)}
                   title="Dia anterior"
-                  className="px-1.5 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-xs cursor-pointer font-bold"
+                  className="px-1 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-[11px] cursor-pointer font-bold"
                 >
                   ◀
                 </button>
@@ -1212,14 +1286,14 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
                   type="date"
                   value={dataProgramacao}
                   onChange={(e) => e.target.value && handleDataProgramacaoChange(e.target.value)}
-                  className="bg-transparent px-1.5 py-0.5 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer"
                   title="Escolha o dia da programação"
                 />
                 <button
                   type="button"
                   onClick={() => handleNavegarDiaProgramacao(1)}
                   title="Próximo dia"
-                  className="px-1.5 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-xs cursor-pointer font-bold"
+                  className="px-1 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-[11px] cursor-pointer font-bold"
                 >
                   ▶
                 </button>
@@ -1236,15 +1310,15 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
               </div>
             </label>
 
-            <span className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            <span className="h-3.5 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
 
             {/* Opção Selecionável: Continuar a partir do último item ativo em produção */}
             <label
               title="Quando ativado, os horários das ordens deste lote começam logo após o término do último item ativo na fábrica em cada posto (em vez do horário fixo do turno)."
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer border transition-all ${
+              className={`flex items-center gap-1.5 h-7 px-2.5 rounded-lg text-xs font-semibold cursor-pointer border transition-all ${
                 continuarAposProducao
                   ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800 shadow-2xs font-bold"
-                  : "bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600/70"
+                  : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
               }`}
             >
               <input
@@ -1257,105 +1331,40 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
             </label>
           </div>
 
-          {/* Cluster 2: Cálculo & Exibição (Modo Dimensionamento, Alternador de Visão e Densidade) */}
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 p-1.5 shadow-2xs">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-1">
-              Visualização & Cálculo
-            </span>
-
-            {/* Alternador dos 2 Modos: Lote Fixo do Patan vs Estoque Máximo (Carga Máquina) */}
-            <div className="flex items-center rounded-lg bg-white dark:bg-slate-900 p-0.5 border border-slate-200 dark:border-slate-700 shadow-2xs">
-              <button
-                type="button"
-                aria-label="Lote Fixo (Patan)"
-                onClick={() => handleTrocarModo("PATAN_FIXO")}
-                title="Programar conforme o Lote Fixo oficial do Patan (demanda padrão / embalagem)"
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  modoDimensionamento === "PATAN_FIXO"
-                    ? "bg-slate-100 dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 shadow-2xs font-bold border border-slate-200/80 dark:border-slate-700"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                <span>🎯 Lote Fixo (Patan)</span>
-              </button>
-              <button
-                type="button"
-                aria-label="Estoque Máximo (Carga Máq.)"
-                onClick={() => handleTrocarModo("ESTOQUE_MAXIMO")}
-                title="Programar conforme Carga Máquina / Estoque Máximo (kanban_max)"
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  modoDimensionamento === "ESTOQUE_MAXIMO"
-                    ? "bg-slate-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300 shadow-2xs font-bold border border-slate-200/80 dark:border-slate-700"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                <span>📊 Estoque Máximo (Carga Máq.)</span>
-              </button>
-            </div>
-
-            <span className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
-
-            {/* Alternador de Visão: Cards vs Seisan Kanriban */}
-            <div className="flex items-center rounded-lg bg-white dark:bg-slate-900 p-0.5 border border-slate-200 dark:border-slate-700 shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setModoVisao("cards")}
-                title="Visualização em Cards / Colunas Kanban"
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  modoVisao === "cards"
-                    ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-2xs font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-                <span>🗂️ Cards</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setModoVisao("timeline")}
-                title="Visualização Seisan Kanriban: Linha do Tempo por Prensa / Posto de Trabalho"
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  modoVisao === "timeline"
-                    ? "bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 shadow-2xs font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span>⏱️ Seisan Kanriban</span>
-              </button>
-            </div>
-
-            {/* Alternador de Densidade dos Cards (apenas ativo no modo Cards) */}
-            {modoVisao === "cards" && (
-              <button
-                type="button"
-                onClick={() => setModoCompacto((prev) => !prev)}
-                title={modoCompacto ? "Expandir todos os cartões (visão detalhada com estoque)" : "Compactar todos os cartões (visão minimalista)"}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
-                  modoCompacto
-                    ? "border-indigo-300 dark:border-indigo-700 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 shadow-2xs"
-                    : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs"
-                }`}
-              >
-                {modoCompacto ? (
-                  <>
-                    <Maximize2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                    <span>📐 Modo Compacto (Ativo)</span>
-                  </>
-                ) : (
-                  <>
-                    <Minimize2 className="w-3.5 h-3.5 text-slate-500" />
-                    <span>📑 Modo Detalhado</span>
-                  </>
-                )}
-              </button>
-            )}
+          {/* Direita: Alternador dos 2 Modos de Dimensionamento (Lote Fixo vs Estoque Máximo) */}
+          <div className="flex items-center h-7 rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700 shadow-2xs">
+            <button
+              type="button"
+              aria-label="Lote Fixo (Patan)"
+              onClick={() => handleTrocarModo("PATAN_FIXO")}
+              title="Programar conforme o Lote Fixo oficial do Patan (demanda padrão / embalagem)"
+              className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                modoDimensionamento === "PATAN_FIXO"
+                  ? "bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-300 shadow-2xs font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              <span>🎯 Lote Fixo (Patan)</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Estoque Máximo (Carga Máq.)"
+              onClick={() => handleTrocarModo("ESTOQUE_MAXIMO")}
+              title="Programar conforme Carga Máquina / Estoque Máximo (kanban_max)"
+              className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                modoDimensionamento === "ESTOQUE_MAXIMO"
+                  ? "bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-300 shadow-2xs font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              <span>📊 Estoque Máximo (Carga Máq.)</span>
+            </button>
           </div>
         </div>
 
         {/* Informações adicionais / feedback de sincronização */}
         {importResult && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">
+          <div className="mx-3 mb-2 flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">
             <span>✓</span>
             <span>{importResult.total_importados} itens processados e sincronizados com sucesso.</span>
           </div>
@@ -1861,7 +1870,7 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
         </div>
       )}
 
-      {/* Visualização de Programação: Cards Kanban vs Seisan Kanriban (Linha do Tempo) */}
+      {/* Visualização de Programação: Quadro Kanban vs Tabela vs Linha do Tempo */}
       {modoVisao === "cards" ? (
         <SequenciaBoard
           itensPorPosto={state.itensPorPosto}
@@ -1906,6 +1915,178 @@ export function ProgramacaoPatan({ setor: setorProp }: ProgramacaoPatanProps = {
           modoEdicao={true}
           onSolicitarEditarItem={(item) => setItemParaEditar(item)}
         />
+      ) : modoVisao === "tabela" ? (
+        <div className="w-full space-y-2.5">
+          {/* Barra compacta de busca e filtro por posto na Tabela de Programação */}
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 shadow-2xs flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2 flex-1">
+              <input
+                type="text"
+                value={buscaTabelaProg}
+                onChange={(e) => setBuscaTabelaProg(e.target.value)}
+                placeholder="Buscar por peça ou posto..."
+                className="h-7 min-w-[220px] max-w-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              />
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                <span>Posto</span>
+                <select
+                  value={postoTabelaProg}
+                  onChange={(e) => setPostoTabelaProg(e.target.value)}
+                  className="h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none"
+                >
+                  <option value="TODOS">Todos ({Object.keys(state.itensPorPosto).length})</option>
+                  {Object.keys(state.itensPorPosto)
+                    .sort()
+                    .map((p) => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
+                    ))}
+                </select>
+              </label>
+            </div>
+            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              {Object.values(state.itensPorPosto).flat().length} itens no lote
+            </span>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/60 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <th className="py-2 px-3">Seq</th>
+                  <th className="py-2 px-3">Posto</th>
+                  <th className="py-2 px-3">Peça / Material</th>
+                  <th className="py-2 px-3 text-center">Kanbans</th>
+                  <th className="py-2 px-3 text-right">Total Pçs</th>
+                  <th className="py-2 px-3 text-right">Saldo Estoque</th>
+                  <th className="py-2 px-3">Janela Planejada</th>
+                  <th className="py-2 px-3 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+                {Object.entries(state.itensPorPosto)
+                  .filter(([posto]) => postoTabelaProg === "TODOS" || posto === postoTabelaProg)
+                  .flatMap(([, itens]) => itens)
+                  .filter((it) => {
+                    const q = buscaTabelaProg.trim().toLowerCase();
+                    if (!q) return true;
+                    return (
+                      (it.material?.toLowerCase().includes(q) ?? false) ||
+                      it.posto_trabalho.toLowerCase().includes(q)
+                    );
+                  })
+                  .map((it) => {
+                    const chave = String(it.id ?? `novo-${it.sequencia}`);
+                    const totalPecas = it.kanbans * it.qtd_por_kanban;
+                    const horaIni = it.hora_inicial
+                      ? new Date(it.hora_inicial).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "--:--";
+                    const horaFim = it.hora_final
+                      ? new Date(it.hora_final).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "--:--";
+                    return (
+                      <tr
+                        key={`${it.posto_trabalho}-${chave}`}
+                        className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                      >
+                        <td className="py-2 px-3 font-mono font-bold text-slate-600 dark:text-slate-400">
+                          #{it.sequencia}
+                        </td>
+                        <td className="py-2 px-3 font-mono font-semibold text-slate-900 dark:text-slate-100">
+                          {it.posto_trabalho}
+                        </td>
+                        <td className="py-2 px-3 font-mono font-bold text-slate-900 dark:text-slate-100">
+                          {it.material || "—"}
+                        </td>
+                        <td className="py-2 px-3">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                dispatch({
+                                  type: "AJUSTAR_KANBAN",
+                                  payload: { posto: it.posto_trabalho, chave, delta: -1 },
+                                })
+                              }
+                              className="h-6 w-6 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+                            >
+                              -
+                            </button>
+                            <span className="font-mono font-bold min-w-[28px] text-center">
+                              {it.kanbans}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                dispatch({
+                                  type: "AJUSTAR_KANBAN",
+                                  payload: { posto: it.posto_trabalho, chave, delta: 1 },
+                                })
+                              }
+                              className="h-6 w-6 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </td>
+                        <td className="py-2 px-3 text-right font-mono font-semibold">
+                          {totalPecas.toLocaleString("pt-BR")}
+                        </td>
+                        <td
+                          className={`py-2 px-3 text-right font-mono font-semibold ${
+                            it.tem_falta_estoque
+                              ? "text-rose-600 dark:text-rose-400"
+                              : "text-emerald-600 dark:text-emerald-400"
+                          }`}
+                        >
+                          {(it.saldo_estoque ?? 0).toLocaleString("pt-BR")}
+                        </td>
+                        <td className="py-2 px-3 font-mono text-slate-700 dark:text-slate-300">
+                          {horaIni} - {horaFim}
+                          {it.almoco_incluso && (
+                            <span className="ml-1.5 text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
+                              🍽️
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          <div className="inline-flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => setItemParaEditar(it)}
+                              className="px-2 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-[11px] font-semibold cursor-pointer"
+                            >
+                              ✏️ Editar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setItensRemovidos((prev) => new Set(prev).add(chave));
+                                dispatch({
+                                  type: "REMOVER_ITEM",
+                                  payload: { posto: it.posto_trabalho, chave },
+                                });
+                              }}
+                              className="px-2 py-1 rounded border border-rose-200 dark:border-rose-800/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[11px] font-semibold cursor-pointer"
+                            >
+                              Retirar
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       ) : (
         <ProgramacaoTimelineView
           itensPorPosto={state.itensPorPosto}

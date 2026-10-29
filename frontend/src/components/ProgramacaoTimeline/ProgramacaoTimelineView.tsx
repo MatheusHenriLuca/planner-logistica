@@ -148,26 +148,26 @@ export function ProgramacaoTimelineView({
   const postos = Object.keys(itensPorPosto).sort();
 
   return (
-    <div className="w-full flex flex-col rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+    <div className="w-full flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs overflow-hidden">
       {/* Barra Superior da Linha do Tempo: Legenda e Controles de Zoom */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/60 px-4 py-2.5">
-        <div className="flex items-center gap-3 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/60 px-3 py-1.5">
+        <div className="flex items-center gap-2.5 text-xs flex-wrap">
           <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200">
-            <Clock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <Clock className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>Seisan Kanriban — Linha do Tempo por Prensa / Posto</span>
           </div>
           <span className="text-slate-300 dark:text-slate-700">|</span>
-          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-400">
             <span className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-sm bg-indigo-500/80 dark:bg-indigo-600/80 inline-block" />
+              <span className="w-2 h-2 rounded-xs bg-indigo-500/80 dark:bg-indigo-600/80 inline-block" />
               <span>Lote Programado</span>
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-sm bg-amber-400/60 dark:bg-amber-500/40 border border-amber-500/50 inline-block" />
+              <span className="w-2 h-2 rounded-xs bg-amber-400/60 dark:bg-amber-500/40 border border-amber-500/50 inline-block" />
               <span>Pausa Almoço</span>
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-sm bg-red-400/80 inline-block" />
+              <span className="w-2 h-2 rounded-xs bg-red-400/80 inline-block" />
               <span>Crítico / Bloqueado</span>
             </span>
           </div>

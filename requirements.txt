@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy>=2.0,<3.0
+pydantic-settings
+passlib[bcrypt]
+bcrypt>=4.0,<4.1
+python-jose[cryptography]
+python-multipart
+openpyxl

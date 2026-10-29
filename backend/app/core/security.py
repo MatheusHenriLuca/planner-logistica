@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from jose import jwt
@@ -6,6 +6,7 @@ from passlib.context import CryptContext
 
 from app.core.config import get_settings
 
+UTC = timezone.utc
 _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 

@@ -217,31 +217,31 @@ export function ProducaoTabelaView({
   }, [itens]);
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-2.5">
       {/* Barra de Filtros e Busca da Tabela */}
-      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-2xs space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/90 px-3 py-1.5 shadow-2xs">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Campo de Busca Textual */}
-          <div className="relative min-w-[240px] flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <div className="relative min-w-[220px] flex-1 max-w-sm">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
             <input
               type="text"
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar por peça, posto ou patan..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              className="h-7 w-full pl-8 pr-2.5 text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             />
           </div>
 
           {/* Filtro por Posto de Trabalho */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
-              <Layers className="w-3.5 h-3.5" /> Posto:
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <Layers className="w-3.5 h-3.5" /> Posto
             </span>
             <select
               value={postoFiltro}
               onChange={(e) => setPostoFiltro(e.target.value)}
-              className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              className="h-7 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-2 text-xs font-medium text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             >
               <option value="TODOS">Todos os Postos ({postosDisponiveis.length})</option>
               {postosDisponiveis.map((p) => (
@@ -253,11 +253,11 @@ export function ProducaoTabelaView({
           </div>
 
           {/* Pills de Filtro por Status */}
-          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div className="inline-flex h-7 items-center gap-0.5 bg-slate-100 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
             <button
               type="button"
               onClick={() => setStatusFiltro("todos")}
-              className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+              className={`h-6 px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                 statusFiltro === "todos"
                   ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
@@ -268,7 +268,7 @@ export function ProducaoTabelaView({
             <button
               type="button"
               onClick={() => setStatusFiltro("em_producao")}
-              className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+              className={`h-6 px-2.5 rounded-md text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                 statusFiltro === "em_producao"
                   ? "bg-emerald-600 text-white shadow-2xs"
                   : "text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
@@ -280,7 +280,7 @@ export function ProducaoTabelaView({
             <button
               type="button"
               onClick={() => setStatusFiltro("fila")}
-              className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+              className={`h-6 px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                 statusFiltro === "fila"
                   ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
@@ -292,7 +292,7 @@ export function ProducaoTabelaView({
               <button
                 type="button"
                 onClick={() => setStatusFiltro("extras")}
-                className={`px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
+                className={`h-6 px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                   statusFiltro === "extras"
                     ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
@@ -306,13 +306,13 @@ export function ProducaoTabelaView({
       </div>
 
       {/* Tabela de Ordens de Produção */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden w-full">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs overflow-hidden w-full">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/80 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                <th className="py-3.5 px-4 w-16 text-center"># Seq</th>
-                <th className="py-3.5 px-4">Posto</th>
+              <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/80 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <th className="py-2.5 px-3 w-14 text-center"># Seq</th>
+                <th className="py-2.5 px-3">Posto</th>
                 <th className="py-3.5 px-4">Peça / Material</th>
                 <th className="py-3.5 px-4">Turno / Data</th>
                 <th className="py-3.5 px-4 text-center">Patan</th>

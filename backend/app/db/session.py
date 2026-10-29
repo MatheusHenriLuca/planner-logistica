@@ -15,7 +15,10 @@ class Base(DeclarativeBase):
 def _get_engine():
     settings = get_settings()
     if settings.database_url.startswith("sqlite"):
-        return create_engine(settings.database_url)
+        return create_engine(
+            settings.database_url,
+            connect_args={"check_same_thread": False},
+        )
 
     # Configuração de pool de alta concorrência para PostgreSQL em produção (20-50 conexões simultâneas)
     return create_engine(

@@ -614,83 +614,144 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
     (t) => !linha || t.linha === linha || t.linha === "TODAS"
   );
 
+  const totalNaFila = Object.values(itensPorPostoFiltrado).reduce((acc, arr) => acc + arr.length, 0);
+  const totalEmProducao = Object.values(itensPorPostoFiltrado)
+    .flat()
+    .filter((i) => i.em_producao).length;
+
   return (
-    <div
-      className={`w-full min-h-[calc(100vh-4rem)] transition-all duration-150 ${
-        modoVisualizacao === "tabela" || modoVisualizacao === "timeline"
-          ? "px-2 sm:px-3 py-3"
-          : "px-6 py-6"
-      }`}
-    >
-      {/* Cockpit de Controle da Produção (2 Tiers - Limpo, Organizado e Sem Duplicidade) */}
-      <div className="mb-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs overflow-hidden">
-        {/* Tier 1: Identificação do Setor, Troca Rápida e Ações Principais */}
-        <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span
-              className={`flex h-11 w-11 items-center justify-center rounded-xl text-xl border shadow-2xs font-bold ${
-                setor === "estamparia"
-                  ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
-                  : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+    <div className="w-full min-h-[calc(100vh-3.5rem)] px-3 sm:px-4 py-2.5 transition-all duration-150">
+      <h1 className="sr-only">
+        Produção — {setor === "estamparia" ? "Estamparia" : "Solda"}
+      </h1>
+
+      {/* Barra de Controle Compacta e Padronizada (Proporções Fixas em Todas as Visões e Setores) */}
+      <div className="mb-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
+        {/* Linha 1: Setor, Alternador de Visão (Quadro/Tabela/Linha do Tempo), Densidade e Ações */}
+        <div className="px-3 py-1.5 border-b border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
+          {/* Esquerda: Setor + Visões + Densidade (Posições Fixas) */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Switcher Rápido de Setor */}
+            <div className="flex items-center h-7 rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700 text-xs font-semibold">
+              {podeVerSolda && (
+                <Link
+                  to={`/producao/solda${linhaParam ? `?linha=${encodeURIComponent(linhaParam)}` : ""}`}
+                  className={`flex items-center gap-1 h-full px-2.5 rounded-md transition-all ${
+                    setor === "solda"
+                      ? "bg-emerald-600 text-white font-bold shadow-2xs"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  }`}
+                >
+                  <Zap className="w-3 h-3" />
+                  <span>Solda</span>
+                </Link>
+              )}
+              {podeVerEstamparia && (
+                <Link
+                  to={`/producao/estamparia${linhaParam ? `?linha=${encodeURIComponent(linhaParam)}` : ""}`}
+                  className={`flex items-center gap-1 h-full px-2.5 rounded-md transition-all ${
+                    setor === "estamparia"
+                      ? "bg-indigo-600 text-white font-bold shadow-2xs"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  }`}
+                >
+                  <Factory className="w-3 h-3" />
+                  <span>Estamparia</span>
+                </Link>
+              )}
+            </div>
+
+            <span className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+
+            {/* Alternador de Visualização Quadro / Tabela / Linha do Tempo */}
+            <div className="flex items-center h-7 rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200/80 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setModoVisualizacao("cards")}
+                className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  modoVisualizacao === "cards"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+                title="Visualização em Quadro Kanban"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>Quadro</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoVisualizacao("tabela")}
+                className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  modoVisualizacao === "tabela"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+                title="Visualização em Tabela Detalhada"
+              >
+                <TableProperties className="w-3.5 h-3.5" />
+                <span>Tabela</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoVisualizacao("timeline")}
+                className={`flex items-center gap-1.5 h-full px-2.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  modoVisualizacao === "timeline"
+                    ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                }`}
+                title="Visualização em Linha do Tempo (Fluxo Cronológico do Chão de Fábrica)"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Linha do Tempo</span>
+              </button>
+            </div>
+
+            {/* Alternador de Densidade (Mantém posição fixa em todas as visões) */}
+            <button
+              type="button"
+              disabled={modoVisualizacao !== "cards"}
+              onClick={() => setModoCompacto((prev) => !prev)}
+              title={
+                modoVisualizacao !== "cards"
+                  ? "Disponível na visão de Quadro"
+                  : modoCompacto
+                  ? "Expandir cartões (visão detalhada com insumos)"
+                  : "Compactar cartões (visão minimalista otimizada)"
+              }
+              className={`flex items-center gap-1.5 h-7 px-2.5 rounded-lg border text-xs font-semibold transition-all ${
+                modoVisualizacao !== "cards"
+                  ? "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-400 dark:text-slate-600 opacity-50 cursor-not-allowed"
+                  : modoCompacto
+                  ? "border-indigo-300 dark:border-indigo-700 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 shadow-2xs cursor-pointer"
+                  : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs cursor-pointer"
               }`}
             >
-              {setor === "estamparia" ? <Factory className="w-5 h-5" /> : <Zap className="w-5 h-5" />}
-            </span>
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                  Produção — {setor === "estamparia" ? "Estamparia" : "Solda"}
-                </h1>
-                {/* Switcher Rápido de Setor se tiver permissão em ambos */}
-                <div className="flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
-                  {podeVerSolda && (
-                    <Link
-                      to="/producao/solda"
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all ${
-                        setor === "solda"
-                          ? "bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 font-bold shadow-2xs"
-                          : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
-                      }`}
-                    >
-                      <Zap className="w-3 h-3" />
-                      <span>Solda</span>
-                    </Link>
-                  )}
-                  {podeVerEstamparia && (
-                    <Link
-                      to="/producao/estamparia"
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all ${
-                        setor === "estamparia"
-                          ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 font-bold shadow-2xs"
-                          : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
-                      }`}
-                    >
-                      <Factory className="w-3 h-3" />
-                      <span>Estamparia</span>
-                    </Link>
-                  )}
-                </div>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                {setor === "estamparia"
-                  ? "Prensas, matrizes, corte e conformação de peças com coluna integrada de Tryout."
-                  : "Postos de solda (SB6A), sequenciamento de lotes e acompanhamento da linha de montagem."}
-              </p>
-            </div>
+              {modoCompacto ? (
+                <>
+                  <Maximize2 className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                  <span>Modo Compacto</span>
+                </>
+              ) : (
+                <>
+                  <Minimize2 className="w-3 h-3 text-slate-500" />
+                  <span>Modo Detalhado</span>
+                </>
+              )}
+            </button>
           </div>
 
-          {/* Ações Primárias da Produção */}
-          <div className="flex items-center gap-2.5">
+          {/* Direita: Ações Primárias da Produção */}
+          <div className="flex flex-wrap items-center gap-1.5">
             {podeInserirCard && (
               <button
                 type="button"
                 onClick={() => setModalInserirCardAberto(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-emerald-500 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 text-xs font-bold shadow-2xs transition-all cursor-pointer"
+                className="flex items-center gap-1.5 h-7 rounded-lg border border-emerald-500 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 text-xs font-bold shadow-2xs transition-all cursor-pointer"
                 title="Inserir ordem de emergência diretamente na produção (Ctrl + I)"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 <span>+ Ordem de Emergência</span>
-                <kbd className="hidden sm:inline-block ml-1 px-1.5 py-0.2 text-[10px] font-mono bg-emerald-700 text-emerald-100 rounded">
+                <kbd className="hidden sm:inline-block ml-0.5 px-1 py-0.2 text-[10px] font-mono bg-emerald-700 text-emerald-100 rounded">
                   Ctrl+I
                 </kbd>
               </button>
@@ -700,7 +761,7 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
                 type="button"
                 data-testid="btn-toggle-modo-edicao-producao"
                 onClick={() => setModoEdicaoProducao((prev) => !prev)}
-                className={`flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold shadow-2xs transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 h-7 rounded-lg border px-2.5 text-xs font-bold shadow-2xs transition-all cursor-pointer ${
                   modoEdicaoProducao
                     ? "border-amber-500 bg-amber-500 hover:bg-amber-600 text-slate-950 ring-2 ring-amber-400/50"
                     : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
@@ -714,7 +775,7 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
             <button
               type="button"
               onClick={handleExportar}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-3.5 py-2 text-xs font-semibold shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2.5 text-xs font-semibold shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
               title="Exportar dados da produção atual em formato CSV"
             >
               <Download className="w-3.5 h-3.5 text-slate-500" />
@@ -724,7 +785,7 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
               <button
                 type="button"
                 onClick={() => setModalLimparAberto(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 px-3.5 py-2 text-xs font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors shadow-2xs cursor-pointer"
+                className="flex items-center gap-1.5 h-7 rounded-lg border border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 px-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors shadow-2xs cursor-pointer"
                 title="Limpar itens em produção desta linha para testes (Exclusivo Admin)"
               >
                 <Trash2 className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
@@ -734,12 +795,11 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
           </div>
         </div>
 
-        {/* Tier 2: Escopo de Filtros (Linha, Turno, Data) & Alternador de Visualização */}
-        <div className="px-5 py-3 bg-slate-50/70 dark:bg-slate-900/50 flex flex-wrap items-center justify-between gap-4">
-          {/* Filtros de Escopo */}
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <span>Linha</span>
+        {/* Linha 2: Escopo de Filtros (Linha, Turno, Data) e Resumo Compacto */}
+        <div className="px-3 py-1.5 bg-slate-50/70 dark:bg-slate-900/50 rounded-b-xl flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Linha</span>
               <select
                 aria-label="Linha"
                 value={linha}
@@ -752,7 +812,7 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
                     return p;
                   });
                 }}
-                className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-900 dark:text-slate-100 shadow-2xs focus:border-indigo-500 focus:outline-none cursor-pointer"
+                className="h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 text-xs font-semibold text-slate-900 dark:text-slate-100 shadow-2xs focus:border-indigo-500 focus:outline-none cursor-pointer"
               >
                 {linhasDisponiveis.map((item) => (
                   <option key={item.valor} value={item.valor}>
@@ -762,13 +822,15 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
               </select>
             </label>
 
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <span>Turno</span>
+            <span className="h-3.5 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+
+            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <span className="text-slate-500 dark:text-slate-400 font-medium">Turno</span>
               <select
                 aria-label="Turno"
                 value={turno}
                 onChange={(event) => setTurno(Number(event.target.value))}
-                className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-900 dark:text-slate-100 shadow-2xs focus:border-indigo-500 focus:outline-none cursor-pointer"
+                className="h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 text-xs font-semibold text-slate-900 dark:text-slate-100 shadow-2xs focus:border-indigo-500 focus:outline-none cursor-pointer"
               >
                 <option value={0}>Todos os Turnos</option>
                 <option value={1}>1º Turno</option>
@@ -777,14 +839,18 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
               </select>
             </label>
 
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <label htmlFor="data-producao-input">Data da Produção</label>
-              <div className="flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 shadow-2xs">
+            <span className="h-3.5 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <label htmlFor="data-producao-input" className="text-slate-500 dark:text-slate-400 font-medium">
+                Data<span className="sr-only"> da Produção</span>
+              </label>
+              <div className="flex items-center gap-0.5 h-7 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-1.5 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => handleNavegarDiaProducao(-1)}
                   title="Dia anterior"
-                  className="px-1.5 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-xs cursor-pointer font-bold"
+                  className="px-1 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-[11px] cursor-pointer font-bold"
                 >
                   ◀
                 </button>
@@ -800,14 +866,14 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
                   type="button"
                   onClick={() => handleNavegarDiaProducao(1)}
                   title="Próximo dia"
-                  className="px-1.5 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-xs cursor-pointer font-bold"
+                  className="px-1 py-0.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 rounded text-[11px] cursor-pointer font-bold"
                 >
                   ▶
                 </button>
                 <button
                   type="button"
                   onClick={() => setDataProducao(getHojeLocalIso())}
-                  className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
                     dataProducao === getHojeLocalIso()
                       ? "bg-emerald-600 text-white shadow-2xs"
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
@@ -819,7 +885,7 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
                 <button
                   type="button"
                   onClick={() => setDataProducao("todas")}
-                  className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-bold transition-all cursor-pointer ${
                     dataProducao === "todas"
                       ? "bg-indigo-600 text-white shadow-2xs"
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
@@ -832,78 +898,14 @@ export function Producao({ setor: setorProp }: ProducaoProps) {
             </div>
           </div>
 
-          {/* Alternador de Visualização Cards / Tabela / Linha do Tempo */}
-          <div className="flex items-center rounded-lg bg-slate-200/80 dark:bg-slate-800 p-1 border border-slate-300 dark:border-slate-700 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => setModoVisualizacao("cards")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                modoVisualizacao === "cards"
-                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-              title="Visualização em Quadro Kanban"
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>Quadro</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setModoVisualizacao("tabela")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                modoVisualizacao === "tabela"
-                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-              title="Visualização em Tabela Detalhada"
-            >
-              <TableProperties className="w-3.5 h-3.5" />
-              <span>Tabela</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setModoVisualizacao("timeline")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                modoVisualizacao === "timeline"
-                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-              title="Visualização em Linha do Tempo (Fluxo Cronológico do Chão de Fábrica)"
-            >
-              <Clock className="w-3.5 h-3.5" />
-              <span>Linha do Tempo</span>
-            </button>
+          {/* Indicador sintético discreto à direita */}
+          <div className="hidden md:flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+            <span>{totalNaFila} ordens na fila</span>
+            <span aria-hidden="true">·</span>
+            <span className={totalEmProducao > 0 ? "text-emerald-600 dark:text-emerald-400 font-semibold" : ""}>
+              {totalEmProducao} em produção
+            </span>
           </div>
-
-          {/* Alternador de Densidade dos Cards na Produção */}
-          {modoVisualizacao === "cards" && (
-            <button
-              type="button"
-              onClick={() => setModoCompacto((prev) => !prev)}
-              title={
-                modoCompacto
-                  ? "Expandir cartões (visão detalhada com insumos)"
-                  : "Compactar cartões (visão minimalista otimizada)"
-              }
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
-                modoCompacto
-                  ? "border-indigo-300 dark:border-indigo-700 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 shadow-2xs"
-                  : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs"
-              }`}
-            >
-              {modoCompacto ? (
-                <>
-                  <Maximize2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                  <span>📐 Modo Compacto</span>
-                </>
-              ) : (
-                <>
-                  <Minimize2 className="w-3.5 h-3.5 text-slate-500" />
-                  <span>📑 Modo Detalhado</span>
-                </>
-              )}
-            </button>
-          )}
         </div>
       </div>
 

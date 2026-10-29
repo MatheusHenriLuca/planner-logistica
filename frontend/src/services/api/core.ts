@@ -1,8 +1,22 @@
+function resolveDefaultApiBaseUrl(): string {
+  if (typeof window !== "undefined" && window.location?.hostname) {
+    const { protocol, hostname, port } = window.location;
+    if (
+      protocol === "https:" ||
+      (hostname !== "localhost" && hostname !== "127.0.0.1") ||
+      port === "3000" ||
+      port === "8080" ||
+      port === "80"
+    ) {
+      return `${window.location.origin}/api`;
+    }
+    return `${protocol}//${hostname}:8000`;
+  }
+  return "http://localhost:8000";
+}
+
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ??
-  (typeof window !== "undefined" && window.location?.hostname
-    ? `${window.location.protocol}//${window.location.hostname}:8000`
-    : "http://localhost:8000");
+  import.meta.env.VITE_API_BASE_URL ?? resolveDefaultApiBaseUrl();
 
 export class ApiError extends Error {
   status: number;
